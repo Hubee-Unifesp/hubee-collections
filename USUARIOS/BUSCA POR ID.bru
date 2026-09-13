@@ -1,0 +1,17 @@
+meta {
+  name: BUSCA POR ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/usuarios/c8405cdd-cbac-4a31-8733-63a3cb833174
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
