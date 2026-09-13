@@ -1,0 +1,23 @@
+meta {
+  name: ATUALIZAR
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/usuarios/c8405cdd-cbac-4a31-8733-63a3cb833174
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "primeiroNome": "Nome Atualizado"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
