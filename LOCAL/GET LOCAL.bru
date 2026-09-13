@@ -1,0 +1,21 @@
+meta {
+  name: GET LOCAL
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/locais/{{id}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  id: d20c1b18-21af-43ba-8c51-01d7d87e57b1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}

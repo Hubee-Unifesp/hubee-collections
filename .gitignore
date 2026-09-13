@@ -1,0 +1,14 @@
+# Local Bruno data
+.bruno/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Dependencies and local environment files
+node_modules/
+*.local.bru
