@@ -1,0 +1,7 @@
+info:
+  name: FORNECEDOR
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
