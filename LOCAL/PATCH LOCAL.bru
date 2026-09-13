@@ -5,12 +5,27 @@ meta {
 }
 
 patch {
-  url: 
-  body: none
+  url: {{baseUrl}}/locais/84b6dce4-a7a3-47a3-9417-163ea68fa3ea
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "address": {
+      "zipCode": "12240-120",
+      "street": "Rua francisco",
+      "number": "100",
+      "neighborhood": "Centro",
+      "city": "Mogi das Cruzes",
+      "state": "SP",
+      "country": "Brasil"
+    }
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
   forwardAuthorizationHeader: false
 }
