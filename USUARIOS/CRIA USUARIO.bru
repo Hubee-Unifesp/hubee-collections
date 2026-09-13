@@ -1,0 +1,30 @@
+meta {
+  name: CRIA USUARIO
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/usuarios
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "primeiroNome": "Usuario",
+    "sobrenome": "Teste Fixo",
+    "email": "fixo@email.com",
+    "telefone": "11777777777",
+    "senha": "senha_forte123",
+    "cpf": "11122233344",
+    "dataNascimento": "2000-05-10T00:00:00.000Z",
+    "tipoPerfil": "CLIENT"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
