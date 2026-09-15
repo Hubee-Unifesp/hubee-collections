@@ -1,0 +1,5 @@
+name: production
+variables:
+  - name: baseUrl
+    value: https://hubee-api.onrender.com
+    description: ""
