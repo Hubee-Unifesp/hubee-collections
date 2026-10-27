@@ -1,0 +1,21 @@
+info:
+  name: GET LOCAL
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/locais/{{id}}"
+  auth: inherit
+
+runtime:
+  variables:
+    - name: id
+      value: d20c1b18-21af-43ba-8c51-01d7d87e57b1
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,33 @@
+info:
+  name: POST LOCAL
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/locais"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Centro de Eventos Hubee",
+        "maxCapacity": 500,
+        "address": {
+          "zipCode": "01310-100",
+          "street": "Avenida Paulista",
+          "number": "1000",
+          "complement": "Sala 5",
+          "neighborhood": "Bela Vista",
+          "city": "São Paulo",
+          "state": "SP",
+          "country": "Brasil"
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

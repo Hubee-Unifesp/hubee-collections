@@ -1,9 +1,0 @@
-{
-  "version": "1",
-  "name": "hubee-collections",
-  "type": "collection",
-  "ignore": [
-    "node_modules",
-    ".DS_Store"
-  ]
-}

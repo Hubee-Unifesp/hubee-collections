@@ -1,0 +1,16 @@
+info:
+  name: BUSCA POR ID
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/usuarios/c8405cdd-cbac-4a31-8733-63a3cb833174"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

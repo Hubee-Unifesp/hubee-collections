@@ -1,16 +1,16 @@
-meta {
+info:
   name: PATCH LOCAL
   type: http
   seq: 3
-}
 
-patch {
-  url: 
-  body: none
+http:
+  method: PATCH
+  url: ""
   auth: inherit
-}
 
-settings {
+settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
   forwardAuthorizationHeader: false
-}

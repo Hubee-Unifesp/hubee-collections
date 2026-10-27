@@ -11,14 +11,18 @@ Coleção de requisições da API Hubee para uso com o [Bruno](https://www.usebr
 
 ## Organização sugerida
 
-- `health/`: endpoints de disponibilidade
-- `environments/local.bru`: ambiente local com `baseUrl` em `http://localhost:3000`
+- `EVENTOS/`, `FORNECEDOR/`, `LOCAL/`, `USUARIOS/`: requisições por domínio
+- `environments/local.yml`: ambiente local com `baseUrl` em `http://localhost:3000`
+- `environments/production.yml`: ambiente de produção
 
 Nas requisições, use `{{baseUrl}}` como host. No Bruno, selecione o ambiente `local` antes de executar uma requisição.
 
 ## GitHub
 
-Os arquivos `.bru`, o `bruno.json` e a documentação devem ser versionados. Não versione tokens, senhas ou chaves de API. Para valores locais, use arquivos com a extensão `.local.bru`, que já estão no `.gitignore`.
+A coleção usa só o formato OpenCollection (`.yml`). O Bruno lê um formato por coleção, então arquivos `.bru` não aparecem no app: não crie `.bru` nem `bruno.json`.
+
+Os arquivos `.yml` e a documentação devem ser versionados. Não versione tokens, senhas ou chaves de API: use variáveis secretas no ambiente (`secret: true`).
+
 ## Testes de permissão de organizador (GOL-147)
 
 As requisições `USUARIOS/POST LOGIN ORGANIZADOR`, `USUARIOS/POST LOGIN COMPRADOR`,

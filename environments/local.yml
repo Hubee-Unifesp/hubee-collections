@@ -2,4 +2,19 @@ name: local
 variables:
   - name: baseUrl
     value: http://localhost:3000
-    description: ""
+  - name: organizerId
+    value: ""
+  - name: venueId
+    value: ""
+  - secret: true
+    name: emailOrganizador
+  - secret: true
+    name: senhaOrganizador
+  - secret: true
+    name: emailComprador
+  - secret: true
+    name: senhaComprador
+  - secret: true
+    name: tokenOrganizador
+  - secret: true
+    name: tokenComprador

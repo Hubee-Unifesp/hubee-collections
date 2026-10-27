@@ -1,14 +1,6 @@
-<<<<<<< HEAD
 # Secrets
 .env*
 
-# Dependencies
-node_modules
-
-# OS files
-.DS_Store
-Thumbs.db
-=======
 # Local Bruno data
 .bruno/
 
@@ -20,7 +12,5 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Dependencies and local environment files
+# Dependencies
 node_modules/
-*.local.bru
->>>>>>> 1c8c92ba5fbfca4b7c3274abb468507b4af837fc
