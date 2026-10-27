@@ -1,0 +1,41 @@
+meta {
+  name: POST LOGIN ORGANIZADOR
+  type: http
+  seq: 7
+}
+
+docs {
+  Login de um usuário com vínculo aceito em uma organização (organization_users),
+  com permission = full. Salva o JWT em {{tokenOrganizador}}.
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{emailOrganizador}}",
+    "password": "{{senhaOrganizador}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    bru.setEnvVar("tokenOrganizador", res.getBody().access_token);
+  }
+}
+
+tests {
+  test("responde 200 com access_token", function () {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().access_token).to.be.a("string");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
