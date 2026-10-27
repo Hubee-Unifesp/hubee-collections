@@ -1,16 +1,16 @@
-meta {
+info:
   name: DELETE LOCAL
   type: http
   seq: 4
-}
 
-delete {
-  url: 
-  body: none
+http:
+  method: DELETE
+  url: ""
   auth: inherit
-}
 
-settings {
+settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
   forwardAuthorizationHeader: false
-}

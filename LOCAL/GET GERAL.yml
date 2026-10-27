@@ -1,16 +1,16 @@
-meta {
+info:
   name: GET GERAL
   type: http
   seq: 5
-}
 
-get {
-  url: 
-  body: none
+http:
+  method: GET
+  url: ""
   auth: inherit
-}
 
-settings {
+settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
   forwardAuthorizationHeader: false
-}

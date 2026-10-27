@@ -1,0 +1,16 @@
+info:
+  name: DELETAR
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/usuarios/c8405cdd-cbac-4a31-8733-63a3cb833174"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

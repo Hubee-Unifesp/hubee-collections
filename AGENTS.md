@@ -10,7 +10,7 @@
 
 O `hubee-collections` armazena as coleções declarativas de requisições HTTP para a `hubee-api`. Ele permite que desenvolvedores, QA e agentes testem manualmente e validem os contratos de API de forma reproduzível e versionada no Git, sem necessidade de ferramentas proprietárias com cloud fechada.
 
-- **Formato dos Arquivos:** Sintaxe nativa do Bruno (`.bru`) ou OpenCollection (`.yml`).
+- **Formato dos Arquivos:** somente OpenCollection (`.yml`). O Bruno lê um único formato por coleção; como a raiz tem `opencollection.yml`, arquivos `.bru` são ignorados pelo app. **Não crie arquivos `.bru` nem `bruno.json`.**
 - **Ambiente Local Padrão:** `baseUrl: http://localhost:3000`
 - **Ambiente de Produção:** API hospedada no Render (`https://hubee-api.onrender.com` ou URL oficial).
 
@@ -21,21 +21,18 @@ O `hubee-collections` armazena as coleções declarativas de requisições HTTP 
 ```text
 hubee-collections/
 ├── environments/                # Definição de variáveis de ambiente
-│   ├── local.bru                # baseUrl: http://localhost:3000
-│   ├── production.bru           # URL do ambiente de staging / produção
-│   └── *.local.bru              # ⚠️ Arquivos ignorados para tokens/senhas locais
+│   ├── local.yml                # baseUrl: http://localhost:3000
+│   └── production.yml           # URL do ambiente de staging / produção
 ├── EVENTOS/                     # Requisições de busca, criação e gestão de eventos
-│   ├── folder.bru               # Headers e auth compartilhados da pasta
-│   ├── GET BUSCAR EVENTOS.bru
-│   └── POST CRIAR EVENTO.bru
+│   ├── folder.yml               # Headers e auth compartilhados da pasta
+│   └── POST CRIAR EVENTO.yml
 ├── FORNECEDOR/                  # CRUD de fornecedores de eventos
 ├── LOCAL/                       # Endpoints de locais e venues
 ├── USUARIOS/                    # Autenticação, perfil /users/me e cadastro
-│   ├── folder.bru
-│   ├── POST LOGIN.bru
-│   └── GET PERFIL ME.bru
-├── bruno.json                   # Manifesto da coleção Bruno
-└── opencollection.yml           # Especificação OpenCollection
+│   ├── folder.yml
+│   ├── POST LOGIN ORGANIZADOR.yml
+│   └── GET PERFIL ME.yml
+└── opencollection.yml           # Manifesto da coleção (OpenCollection)
 ```
 
 ---
@@ -50,14 +47,15 @@ hubee-collections/
   POST {{baseUrl}}/auth/login
   ```
 
-### 3.2. Herança de Autenticação com `folder.bru`
-- Em pastas que exigem autenticação (rotas protegidas), configure o header no arquivo `folder.bru`:
-  ```text
-  headers {
-    Authorization: Bearer {{token}}
-  }
+### 3.2. Herança de Autenticação com `folder.yml`
+- Em pastas que exigem autenticação (rotas protegidas), configure a auth no arquivo `folder.yml` e use `auth: inherit` nas requisições:
+  ```yaml
+  request:
+    auth:
+      type: bearer
+      token: "{{token}}"
   ```
-- No script pós-resposta (`post-response`) da requisição de login, armazene o token dinamicamente no ambiente de execução:
+- No script pós-resposta (`runtime.scripts` com `type: after-response`) da requisição de login, armazene o token dinamicamente no ambiente de execução:
   ```javascript
   if (res.status === 200 || res.status === 201) {
     bru.setEnvVar("token", res.body.token || res.body.access_token);
@@ -67,15 +65,15 @@ hubee-collections/
 ### 3.3. Proibição Absoluta de Segredos no Git
 - ⚠️ **NUNCA comite tokens JWT reais, senhas de usuários reais ou credenciais de produção.**
 - Payloads de exemplo devem usar credenciais de teste (ex: `teste@hubee.com.br` / `Senha123!`).
-- Para guardar credenciais pessoais que persistem na sua máquina, use arquivos com terminação `.local.bru` (eles estão cobertos pelo `.gitignore`).
+- Para credenciais pessoais, marque a variável do ambiente como secreta (`secret: true` no `environments/*.yml`). O valor fica só no app do Bruno da sua máquina e não é gravado no arquivo.
 
 ### 3.4. Padrão de Nomenclatura das Requisições
 Os arquivos devem refletir o verbo HTTP em caixa alta seguido da intenção funcional:
-- `GET LISTAR TODOS.bru`
-- `GET BUSCA POR ID.bru`
-- `POST CRIA USUARIO.bru`
-- `PATCH ATUALIZAR.bru`
-- `DELETE DELETAR.bru`
+- `GET LISTAR TODOS.yml`
+- `GET BUSCA POR ID.yml`
+- `POST CRIA USUARIO.yml`
+- `PATCH ATUALIZAR.yml`
+- `DELETE DELETAR.yml`
 
 ---
 

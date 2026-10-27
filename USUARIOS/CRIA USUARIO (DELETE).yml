@@ -1,0 +1,29 @@
+info:
+  name: CRIA USUARIO (DELETE)
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/usuarios"
+  body:
+    type: json
+    data: |-
+      {
+        "primeiroNome": "Descartavel",
+        "sobrenome": "Para Delete",
+        "email": "deletar@email.com",
+        "telefone": "11888888888",
+        "senha": "senha_forte123",
+        "cpf": "10987654321",
+        "dataNascimento": "1999-01-01T00:00:00.000Z",
+        "tipoPerfil": "CLIENT"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
