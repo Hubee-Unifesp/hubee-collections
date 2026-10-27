@@ -19,3 +19,19 @@ Nas requisições, use `{{baseUrl}}` como host. No Bruno, selecione o ambiente `
 ## GitHub
 
 Os arquivos `.bru`, o `bruno.json` e a documentação devem ser versionados. Não versione tokens, senhas ou chaves de API. Para valores locais, use arquivos com a extensão `.local.bru`, que já estão no `.gitignore`.
+## Testes de permissão de organizador (GOL-147)
+
+As requisições `USUARIOS/POST LOGIN ORGANIZADOR`, `USUARIOS/POST LOGIN COMPRADOR`,
+`USUARIOS/GET PERFIL ME` e as da pasta `EVENTOS/` usam estas variáveis do ambiente `local`:
+
+| Variável | Tipo | O que colocar |
+| --- | --- | --- |
+| `organizerId` | comum | ID de uma organização em que o organizador tem vínculo aceito com `permission = full`. |
+| `venueId` | comum | ID de um local existente. |
+| `emailOrganizador` / `senhaOrganizador` | secreta | Usuário com esse vínculo aceito na organização. |
+| `emailComprador` / `senhaComprador` | secreta | Usuário comum, sem vínculo na organização. |
+| `tokenOrganizador` / `tokenComprador` | secreta | Preenchidas pelos logins; não edite. |
+
+As variáveis secretas ficam só na sua máquina e não são gravadas nos arquivos versionados.
+Ordem de execução: os dois logins, `GET PERFIL ME` e depois a pasta `EVENTOS`.
+O `POST CRIAR EVENTO` espera `201`, e o `POST CRIAR EVENTO SEM PERMISSAO` espera `403`.
