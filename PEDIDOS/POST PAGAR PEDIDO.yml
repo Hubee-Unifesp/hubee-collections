@@ -1,0 +1,40 @@
+info:
+  name: POST PAGAR PEDIDO
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/payments"
+  body:
+    type: json
+    data: |-
+      {
+        "orderId": "{{orderId}}",
+        "paymentMethod": "pix"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 201 com o pagamento confirmado", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().status).to.equal("confirmado");
+          expect(res.getBody().orderId).to.equal(bru.getEnvVar("orderId"));
+          expect(res.getBody().paidAt).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Checkout do pedido {{orderId}}. O valor pago é sempre o total do pedido. Numa
+  única transação o pagamento é confirmado, o pedido passa para pago e os
+  ingressos são emitidos (veja a pasta INGRESSOS). Gateway simulado: sempre
+  aprova. Rodar de novo responde 422, pois o pedido já está pago.

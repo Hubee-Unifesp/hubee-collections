@@ -1,0 +1,29 @@
+info:
+  name: GET PEDIDO POR ID
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/orders/{{orderId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o pedido e seus itens", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("orderId"));
+          expect(res.getBody().items).to.be.an("array").that.is.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Consulta o pedido salvo em {{orderId}}. Pedido de outra pessoa responde 404.
