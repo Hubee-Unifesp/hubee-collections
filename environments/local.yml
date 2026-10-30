@@ -6,6 +6,10 @@ variables:
     value: ""
   - name: venueId
     value: ""
+  - name: ticketTypeId
+    value: ""
+  - name: soldOutTicketTypeId
+    value: ""
   - secret: true
     name: emailOrganizador
   - secret: true

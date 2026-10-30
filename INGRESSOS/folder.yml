@@ -1,0 +1,15 @@
+info:
+  name: INGRESSOS
+  type: folder
+  seq: 5
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+docs:
+  content: |-
+    Ingressos do comprador logado (GOL-175). Rode antes a pasta PEDIDOS até o
+    POST PAGAR PEDIDO: os ingressos só existem depois que o pedido é pago.
+  type: text/markdown

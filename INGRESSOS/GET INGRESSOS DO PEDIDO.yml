@@ -1,0 +1,32 @@
+info:
+  name: GET INGRESSOS DO PEDIDO
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/orders/{{orderId}}/tickets"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com 2 ingressos emitidos do pedido", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.have.length(2);
+          res.getBody().forEach(function (ticket) {
+            expect(ticket.orderId).to.equal(bru.getEnvVar("orderId"));
+            expect(ticket.status).to.equal("emitido");
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Ingressos do pedido {{orderId}}: um por unidade comprada.

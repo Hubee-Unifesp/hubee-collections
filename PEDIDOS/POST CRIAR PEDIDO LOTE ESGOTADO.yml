@@ -1,0 +1,36 @@
+info:
+  name: POST CRIAR PEDIDO LOTE ESGOTADO
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/orders"
+  body:
+    type: json
+    data: |-
+      {
+        "items": [
+          { "ticketTypeId": "{{soldOutTicketTypeId}}", "quantity": 1 }
+        ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 422 e informa que o lote está esgotado", function () {
+          expect(res.getStatus()).to.equal(422);
+          expect(res.getBody().message).to.include("esgotado");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Compra de um lote sem saldo ({{soldOutTicketTypeId}}). Nenhum pedido é gravado.
