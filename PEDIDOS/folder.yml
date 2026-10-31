@@ -1,0 +1,18 @@
+info:
+  name: PEDIDOS
+  type: folder
+  seq: 4
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+docs:
+  content: |-
+    Criação de pedido e checkout (GOL-175). Todas as requisições usam o token do
+    comprador: rode antes USUARIOS/POST LOGIN COMPRADOR e preencha ticketTypeId
+    (lote com saldo) e soldOutTicketTypeId (lote esgotado) no ambiente. O
+    comprador precisa ter CPF e data de nascimento no perfil.
+    Ordem: criar pedido, casos de erro, consultas e, por último, pagar o pedido.
+  type: text/markdown

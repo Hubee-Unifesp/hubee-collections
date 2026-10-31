@@ -11,7 +11,7 @@ Coleção de requisições da API Hubee para uso com o [Bruno](https://www.usebr
 
 ## Organização sugerida
 
-- `EVENTOS/`, `FORNECEDOR/`, `LOCAL/`, `USUARIOS/`: requisições por domínio
+- `EVENTOS/`, `FORNECEDOR/`, `INGRESSOS/`, `LOCAL/`, `PEDIDOS/`, `USUARIOS/`: requisições por domínio
 - `environments/local.yml`: ambiente local com `baseUrl` em `http://localhost:3000`
 - `environments/production.yml`: ambiente de produção
 
@@ -39,3 +39,16 @@ As requisições `USUARIOS/POST LOGIN ORGANIZADOR`, `USUARIOS/POST LOGIN COMPRAD
 As variáveis secretas ficam só na sua máquina e não são gravadas nos arquivos versionados.
 Ordem de execução: os dois logins, `GET PERFIL ME` e depois a pasta `EVENTOS`.
 O `POST CRIAR EVENTO` espera `201`, e o `POST CRIAR EVENTO SEM PERMISSAO` espera `403`.
+
+## Pedidos, checkout e ingressos (GOL-175)
+
+As pastas `PEDIDOS/` e `INGRESSOS/` herdam o token do comprador (`tokenComprador`, preenchido por `USUARIOS/POST LOGIN COMPRADOR`). Variáveis novas do ambiente `local`:
+
+| Variável | Tipo | O que colocar |
+| --- | --- | --- |
+| `ticketTypeId` | comum | ID de um lote com saldo de pelo menos 2 ingressos, de um evento publicado e com vendas abertas. |
+| `soldOutTicketTypeId` | comum | ID de um lote esgotado (por exemplo, com `quantity` 0). |
+| `orderId` / `ticketId` | comum | Preenchidas pelas requisições; não edite. |
+
+O comprador precisa ter CPF e data de nascimento no perfil, senão `POST CRIAR PEDIDO` responde 403.
+Ordem de execução: o login do comprador, a pasta `PEDIDOS` (o `POST PAGAR PEDIDO` por último) e depois a pasta `INGRESSOS`.

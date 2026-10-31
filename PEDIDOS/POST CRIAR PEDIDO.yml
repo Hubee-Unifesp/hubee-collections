@@ -1,0 +1,52 @@
+info:
+  name: POST CRIAR PEDIDO
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/orders"
+  body:
+    type: json
+    data: |-
+      {
+        "items": [
+          { "ticketTypeId": "{{ticketTypeId}}", "quantity": 2 }
+        ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("orderId", res.getBody().id);
+        }
+    - type: tests
+      code: |-
+        test("responde 201 com o pedido pendente", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().status).to.equal("pendente");
+        });
+
+        test("o total é calculado pelo servidor a partir dos itens", function () {
+          const body = res.getBody();
+          const total = body.items.reduce(function (sum, item) {
+            return sum + item.unitPrice * item.quantity;
+          }, 0);
+          expect(body.items).to.have.length(1);
+          expect(body.totalAmount).to.be.closeTo(total, 0.001);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Comprador cria um pedido com 2 ingressos do lote {{ticketTypeId}}. O pedido
+  nasce pendente e reserva o saldo do lote; nenhum ingresso é emitido até o
+  pagamento. Salva o id em {{orderId}}.

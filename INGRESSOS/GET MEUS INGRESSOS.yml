@@ -1,0 +1,43 @@
+info:
+  name: GET MEUS INGRESSOS
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/tickets"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 200 && res.getBody().length > 0) {
+          bru.setEnvVar("ticketId", res.getBody()[0].id);
+        }
+    - type: tests
+      code: |-
+        test("responde 200 só com ingressos em que o comprador é titular", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array").that.is.not.empty;
+        });
+
+        test("traz evento, local e lote aninhados e o QR code", function () {
+          res.getBody().forEach(function (ticket) {
+            expect(ticket.qrCode).to.match(/^[0-9a-f]{64}$/);
+            expect(ticket.event).to.include.keys("id", "name", "startDate", "venue");
+            expect(ticket.event.venue).to.include.keys("name", "address");
+            expect(ticket.ticketType).to.include.keys("id", "batch", "price");
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista os ingressos emitidos para o comprador logado, do mais recente para o
+  mais antigo. Salva o primeiro em {{ticketId}}.
