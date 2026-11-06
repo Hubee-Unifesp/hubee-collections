@@ -5,12 +5,32 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/fornecedores"
+  url: "{{baseUrl}}/suppliers?search=Buffet&category=Buffet"
+  params:
+    - name: search
+      value: Buffet
+      type: query
+    - name: category
+      value: Buffet
+      type: query
   auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista de fornecedores", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array");
+        });
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista fornecedores ativos em /suppliers com filtros opcionais de busca por
+  nome da empresa (search) e categoria (category), ambos case-insensitive.

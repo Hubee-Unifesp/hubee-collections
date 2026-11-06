@@ -52,3 +52,7 @@ As pastas `PEDIDOS/` e `INGRESSOS/` herdam o token do comprador (`tokenComprador
 
 O comprador precisa ter CPF e data de nascimento no perfil, senão `POST CRIAR PEDIDO` responde 403.
 Ordem de execução: o login do comprador, a pasta `PEDIDOS` (o `POST PAGAR PEDIDO` por último) e depois a pasta `INGRESSOS`.
+
+## Fornecedores (GOL-202)
+
+A pasta `FORNECEDOR/` herda o token do organizador (`tokenOrganizador`, preenchido por `USUARIOS/POST LOGIN ORGANIZADOR`) e cobre o CRUD e os filtros de busca (`search` e `category`) em `/suppliers`. O `POST FORNECEDOR` salva o ID criado na variável `supplierId` para uso em `GET FORNECEDOR (por id)`, `PATCH FORNECEDOR` e `DELETE FORNECEDOR`.

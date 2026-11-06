@@ -4,4 +4,14 @@ info:
   seq: 1
 
 request:
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+docs:
+  content: |-
+    CRUD e busca de fornecedores (GOL-202). Todas as rotas de /suppliers exigem
+    token de organizador (usuário com vínculo aceito em pelo menos uma
+    organização) ou ADMIN global: rode antes USUARIOS/POST LOGIN ORGANIZADOR.
+    O POST FORNECEDOR salva o id criado em {{supplierId}} para as demais requisições.
+  type: text/markdown
