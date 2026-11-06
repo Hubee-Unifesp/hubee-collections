@@ -5,16 +5,35 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/fornecedores/:id"
+  url: "{{baseUrl}}/suppliers/:id"
   params:
     - name: id
-      value: ""
+      value: "{{supplierId}}"
       type: path
+  body:
+    type: json
+    data: |-
+      {
+        "companyName": "Buffet Sabor Real Premium",
+        "phone": "11977776666"
+      }
   auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com os dados atualizados", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().companyName).to.equal("Buffet Sabor Real Premium");
+        });
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza os dados cadastrais do fornecedor {{supplierId}}.
