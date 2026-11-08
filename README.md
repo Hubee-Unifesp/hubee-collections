@@ -11,7 +11,7 @@ Coleção de requisições da API Hubee para uso com o [Bruno](https://www.usebr
 
 ## Organização sugerida
 
-- `EVENTOS/`, `FORNECEDOR/`, `INGRESSOS/`, `LOCAL/`, `PEDIDOS/`, `USUARIOS/`: requisições por domínio
+- `EVENTOS/`, `FORNECEDOR/`, `INGRESSOS/`, `LOCAL/`, `ORGANIZACOES/`, `PEDIDOS/`, `USUARIOS/`: requisições por domínio
 - `environments/local.yml`: ambiente local com `baseUrl` em `http://localhost:3000`
 - `environments/production.yml`: ambiente de produção
 
@@ -56,3 +56,11 @@ Ordem de execução: o login do comprador, a pasta `PEDIDOS` (o `POST PAGAR PEDI
 ## Fornecedores (GOL-202)
 
 A pasta `FORNECEDOR/` herda o token do organizador (`tokenOrganizador`, preenchido por `USUARIOS/POST LOGIN ORGANIZADOR`) e cobre o CRUD e os filtros de busca (`search` e `category`) em `/suppliers`. O `POST FORNECEDOR` salva o ID criado na variável `supplierId` para uso em `GET FORNECEDOR (por id)`, `PATCH FORNECEDOR` e `DELETE FORNECEDOR`.
+
+## Organizações (GOL-197 / GOL-198)
+
+A pasta `ORGANIZACOES/` cobre o fluxo de criação, consulta, atualização e exclusão em `/organizations`:
+
+- `POST CRIAR ORGANIZACAO` cria uma organização com qualquer usuário autenticado, vincula automaticamente o criador como `admin` (`permission = full`, `invite_status = accepted`, nível `manage`) e salva o ID em `{{organizationId}}`.
+- `PATCH ATUALIZAR ORGANIZACAO` valida a edição por usuário com nível `manage`.
+- `PATCH ORGANIZACAO SEM PERMISSAO` valida o bloqueio RBAC (`403 Forbidden` para membro sem `manage` ou `404 Not Found` para não-membro).

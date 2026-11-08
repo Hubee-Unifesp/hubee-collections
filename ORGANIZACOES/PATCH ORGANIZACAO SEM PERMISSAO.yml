@@ -1,0 +1,44 @@
+info:
+  name: PATCH ORGANIZACAO SEM PERMISSAO
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizations/:id"
+  params:
+    - name: id
+      value: "{{organizationId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Tentativa de Edição sem Permissão"
+      }
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("bloqueia edição sem nível manage com 403 (membro read/write) ou 404 (não-membro)", function () {
+          expect([403, 404]).to.include(res.getStatus());
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Simula tentativa de atualização da organização {{organizationId}} por usuário
+  sem nível manage (GOL-197):
+  - Se o usuário autenticado NÃO possui vínculo aceito na organização (ex.: {{tokenComprador}}),
+    a API responde 404 Not Found para não revelar a existência ou vínculos da organização.
+  - Se o usuário é membro da organização apenas com nível read ou write (sem manage),
+    a API responde 403 Forbidden.

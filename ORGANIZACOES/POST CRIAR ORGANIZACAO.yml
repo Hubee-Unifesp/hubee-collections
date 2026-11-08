@@ -1,0 +1,48 @@
+info:
+  name: POST CRIAR ORGANIZACAO
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizations"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Atlética Unifesp",
+        "description": "Associação Atlética Acadêmica criada pela coleção do Bruno (GOL-197)."
+      }
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("organizationId", res.getBody().id);
+        }
+    - type: tests
+      code: |-
+        test("responde 201 com a organização criada e representativeId preenchido", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().id).to.be.a("string");
+          expect(res.getBody().name).to.equal("Atlética Unifesp");
+          expect(res.getBody().representativeId).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Usuário autenticado (qualquer role, sem necessidade de ser ADMIN global) cria
+  uma organização em /organizations. Em transação única no banco, a API define
+  representativeId = user.id e cria automaticamente o vínculo em organization_users
+  com role = 'admin', permission = 'full' e invite_status = 'accepted' (nível manage).
+  Salva o id retornado em {{organizationId}} para as demais requisições da pasta.
