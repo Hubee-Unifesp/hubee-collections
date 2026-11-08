@@ -1,0 +1,33 @@
+info:
+  name: GET LISTAR ORGANIZACOES
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizations?name=Atlética"
+  params:
+    - name: name
+      value: Atlética
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista de organizações", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Lista organizações cadastradas em /organizations com filtro opcional por nome
+  parcial e case-insensitive (query param name).

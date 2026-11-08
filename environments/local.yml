@@ -12,6 +12,8 @@ variables:
     value: ""
   - name: supplierId
     value: ""
+  - name: organizationId
+    value: ""
   - secret: true
     name: emailOrganizador
   - secret: true

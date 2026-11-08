@@ -1,0 +1,45 @@
+info:
+  name: PATCH ATUALIZAR ORGANIZACAO
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizations/:id"
+  params:
+    - name: id
+      value: "{{organizationId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Atlética Unifesp - Gestão 2026",
+        "description": "Descrição atualizada pelo administrador da organização (nível manage)."
+      }
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com os dados atualizados (nível manage)", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("organizationId"));
+          expect(res.getBody().name).to.equal("Atlética Unifesp - Gestão 2026");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza parcialmente os dados da organização {{organizationId}}.
+  Protegido por @OrgAccess('manage', { from: 'param', param: 'id' }): exige que
+  o usuário autenticado possua vínculo aceito com nível manage (role = 'admin' e
+  permission = 'full') na organização ou seja ADMIN global da plataforma.
