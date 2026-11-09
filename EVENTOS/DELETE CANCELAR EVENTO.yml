@@ -1,0 +1,37 @@
+info:
+  name: DELETE CANCELAR EVENTO
+  type: http
+  seq: 8
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/:id"
+  params:
+    - name: id
+      value: "{{eventId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content ao cancelar evento", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Cancela o evento {{eventId}} (altera status para `cancelled`).
+  Protegido por @OrgAccess('manage', { from: 'event', param: 'id' }):
+  - Exige nível manage (role = 'admin' e permission = 'full' na organização do evento) ou ADMIN global.
+  - Membros com nível read ou write recebem 403 Forbidden; não-membros recebem 404 Not Found.
+  - Se o evento já estiver cancelado, responde 422 Unprocessable Entity.

@@ -64,3 +64,15 @@ A pasta `ORGANIZACOES/` cobre o fluxo de criação, consulta, atualização e ex
 - `POST CRIAR ORGANIZACAO` cria uma organização com qualquer usuário autenticado, vincula automaticamente o criador como `admin` (`permission = full`, `invite_status = accepted`, nível `manage`) e salva o ID em `{{organizationId}}`.
 - `PATCH ATUALIZAR ORGANIZACAO` valida a edição por usuário com nível `manage`.
 - `PATCH ORGANIZACAO SEM PERMISSAO` valida o bloqueio RBAC (`403 Forbidden` para membro sem `manage` ou `404 Not Found` para não-membro).
+
+## Gerenciamento de eventos e lotes de ingressos (GOL-207)
+
+A pasta `EVENTOS/` cobre o ciclo completo do organizador para eventos (`/events`) e lotes de ingressos (`/events/:eventId/ticket-types`) usando `{{tokenOrganizador}}`, `{{eventId}}` e `{{ticketTypeId}}`:
+
+- `POST CRIAR EVENTO` cria o evento em rascunho (`draft`) e salva o ID em `{{eventId}}`.
+- `PATCH ATUALIZAR EVENTO` atualiza os dados e publica o evento (`status: "published"`).
+- `POST CRIAR LOTE INGRESSO` cria um lote vinculado ao evento `{{eventId}}` e salva o ID em `{{ticketTypeId}}`.
+- `GET LISTAR LOTES DO EVENTO` lista os lotes do evento com o saldo calculado `available`.
+- `PATCH ATUALIZAR LOTE INGRESSO` atualiza nome, preço e quantidade do lote `{{ticketTypeId}}`.
+- `DELETE REMOVER LOTE INGRESSO` remove o lote `{{ticketTypeId}}` quando não há ingressos ou pedidos vinculados (`204 No Content`).
+- `DELETE CANCELAR EVENTO` cancela o evento `{{eventId}}` exigindo nível `manage` (`204 No Content`).

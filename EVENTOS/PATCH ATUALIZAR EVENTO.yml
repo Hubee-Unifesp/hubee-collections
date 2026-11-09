@@ -1,0 +1,49 @@
+info:
+  name: PATCH ATUALIZAR EVENTO
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/events/:id"
+  params:
+    - name: id
+      value: "{{eventId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Calourada Hubee — Edição Oficial",
+        "description": "Evento atualizado e publicado pela coleção do Bruno (GOL-207).",
+        "ageRating": "18",
+        "edition": "2027.1",
+        "status": "published"
+      }
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 OK com dados atualizados", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("eventId"));
+          expect(res.getBody().status).to.equal("published");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Atualiza parcialmente ou publica o evento {{eventId}}.
+  Protegido por @OrgAccess('write', { from: 'event', param: 'id' }):
+  - Exige vínculo aceito com nível write ou manage na organização dona do evento (ou ADMIN global).
+  - Não-membros recebem 404 Not Found; membros read recebem 403 Forbidden.
+  - Eventos já cancelados respondem 422 Unprocessable Entity.
