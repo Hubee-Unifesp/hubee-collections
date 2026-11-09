@@ -1,0 +1,38 @@
+info:
+  name: DELETE REMOVER LOTE INGRESSO
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/:eventId/ticket-types/:id"
+  params:
+    - name: eventId
+      value: "{{eventId}}"
+      type: path
+    - name: id
+      value: "{{ticketTypeId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content ao remover lote sem vínculos", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Remove o lote {{ticketTypeId}} do evento {{eventId}}.
+  Protegido por @OrgAccess('write', { from: 'event', param: 'eventId' }) (GOL-206).
+  Responde 409 Conflict caso o lote já possua ingressos emitidos ou itens de pedido vinculados.
