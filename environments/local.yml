@@ -6,6 +6,8 @@ variables:
     value: ""
   - name: venueId
     value: ""
+  - name: eventId
+    value: ""
   - name: ticketTypeId
     value: ""
   - name: soldOutTicketTypeId
