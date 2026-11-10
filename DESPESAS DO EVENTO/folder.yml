@@ -1,0 +1,13 @@
+info:
+  name: DESPESAS DO EVENTO
+  type: folder
+  seq: 15
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+docs:
+  content: Despesas do evento `{{eventId}}` em `/events/:eventId/expenses`. Todas as rotas exigem `ADMIN` (`{{tokenAdmin}}`). Usa o fornecedor `{{supplierId}}`.
+  type: text/markdown

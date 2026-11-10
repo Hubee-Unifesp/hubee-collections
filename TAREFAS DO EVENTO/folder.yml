@@ -1,0 +1,13 @@
+info:
+  name: TAREFAS DO EVENTO
+  type: folder
+  seq: 16
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+docs:
+  content: Tarefas operacionais do evento `{{eventId}}` em `/events/:eventId/tasks`. Todas as rotas exigem `ADMIN` (`{{tokenAdmin}}`). O responsável é `{{adminUserId}}` (de AUTH/GET USUARIO DO TOKEN).
+  type: text/markdown

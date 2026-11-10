@@ -1,0 +1,59 @@
+info:
+  name: POST ADICIONAR MEMBRO
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/organizations/:orgId/users"
+  params:
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "userId": "{{userId}}",
+        "role": "member",
+        "permission": "read_only",
+        "inviteStatus": "accepted"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 201 com o vínculo criado", function () {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /organizations/:orgId/users
+
+  Vincula o usuário `{{userId}}` à organização.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `userId` (UUID) — obrigatório no POST (só no body)
+  - `role`: `admin` | `member`
+  - `permission`: `full` | `read_only`
+  - `inviteStatus`: `pending` | `accepted` | `rejected` (padrão `pending`)
+
+  **Respostas**
+
+  - `201` vínculo criado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado
+  - `409` usuário já é membro

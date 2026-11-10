@@ -1,4 +1,54 @@
 name: production
 variables:
   - name: baseUrl
-    value: https://hubee-api.onrender.com
+    value: https://hubee-api-1.onrender.com
+  - name: organizerId
+    value: ""
+  - name: venueId
+    value: ""
+  - name: eventId
+    value: ""
+  - name: ticketTypeId
+    value: ""
+  - name: soldOutTicketTypeId
+    value: ""
+  - name: orderId
+    value: ""
+  - name: orderToCancelId
+    value: ""
+  - name: ticketId
+    value: ""
+  - name: supplierId
+    value: ""
+  - name: organizationId
+    value: ""
+  - name: userId
+    value: ""
+  - name: userToDeleteId
+    value: ""
+  - name: registeredUserId
+    value: ""
+  - name: adminUserId
+    value: ""
+  - name: expenseId
+    value: ""
+  - name: taskId
+    value: ""
+  - secret: true
+    name: emailAdmin
+  - secret: true
+    name: senhaAdmin
+  - secret: true
+    name: emailOrganizador
+  - secret: true
+    name: senhaOrganizador
+  - secret: true
+    name: emailComprador
+  - secret: true
+    name: senhaComprador
+  - secret: true
+    name: tokenAdmin
+  - secret: true
+    name: tokenOrganizador
+  - secret: true
+    name: tokenComprador

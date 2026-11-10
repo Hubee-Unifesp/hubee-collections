@@ -1,7 +1,7 @@
 info:
   name: ORGANIZACOES
   type: folder
-  seq: 6
+  seq: 5
 
 request:
   auth:
@@ -10,9 +10,8 @@ request:
 
 docs:
   content: |-
-    CRUD de organizações e validação de RBAC em /organizations (GOL-197 / GOL-198).
-    Qualquer usuário autenticado pode criar uma organização (POST CRIAR ORGANIZACAO)
-    e passa automaticamente a ter vínculo aceito como admin (nível manage).
-    O POST CRIAR ORGANIZACAO salva o id criado em {{organizationId}} para uso
-    nas requisições de consulta, atualização e exclusão.
+    CRUD de organizações e validação de RBAC em `/organizations` (GOL-197 / GOL-198).
+    Qualquer usuário autenticado pode criar uma organização e passa a ter vínculo
+    aceito como admin (nível `manage`). O POST CRIAR ORGANIZACAO salva o id em
+    `{{organizationId}}`. A exclusão é só `ADMIN` (`{{tokenAdmin}}`).
   type: text/markdown

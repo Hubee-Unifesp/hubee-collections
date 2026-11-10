@@ -12,7 +12,7 @@ O `hubee-collections` armazena as coleções declarativas de requisições HTTP 
 
 - **Formato dos Arquivos:** somente OpenCollection (`.yml`). O Bruno lê um único formato por coleção; como a raiz tem `opencollection.yml`, arquivos `.bru` são ignorados pelo app. **Não crie arquivos `.bru` nem `bruno.json`.**
 - **Ambiente Local Padrão:** `baseUrl: http://localhost:3000`
-- **Ambiente de Produção:** API hospedada no Render (`https://hubee-api.onrender.com` ou URL oficial).
+- **Ambiente de Produção:** API hospedada no Render (`https://hubee-api-1.onrender.com`).
 
 ---
 
@@ -20,20 +20,32 @@ O `hubee-collections` armazena as coleções declarativas de requisições HTTP 
 
 ```text
 hubee-collections/
-├── environments/                # Definição de variáveis de ambiente
-│   ├── local.yml                # baseUrl: http://localhost:3000
-│   └── production.yml           # URL do ambiente de staging / produção
-├── EVENTOS/                     # Requisições de busca, criação e gestão de eventos
-│   ├── folder.yml               # Headers e auth compartilhados da pasta
-│   └── POST CRIAR EVENTO.yml
-├── FORNECEDOR/                  # CRUD de fornecedores de eventos
-├── LOCAL/                       # Endpoints de locais e venues
-├── USUARIOS/                    # Autenticação, perfil /users/me e cadastro
-│   ├── folder.yml
-│   ├── POST LOGIN ORGANIZADOR.yml
-│   └── GET PERFIL ME.yml
+├── environments/                # local.yml e production.yml (baseUrl, ids e segredos)
+├── assets/                      # imagem de exemplo para os uploads
+├── HEALTH/                      # GET /health
+├── AUTH/                        # registro, logins (admin, organizador, comprador) e /auth/me
+├── USUARIOS/                    # CRUD administrativo de /users
+├── MINHA CONTA/                 # /users/me: perfil, avatar, senha e exclusão
+├── ORGANIZACOES/                # CRUD de /organizations e validação RBAC
+├── MEMBROS DA ORGANIZACAO/      # /organizations/:orgId/users
+├── LOCAIS/                      # CRUD de /venues
+├── EVENTOS/                     # CRUD de /events, capa e resumo
+│   └── CENARIOS DE BUSCA/       # testes da busca pública de eventos
+├── ORGANIZACOES DO EVENTO/      # /events/:eventId/organizations
+├── LOTES DE INGRESSO/           # /events/:eventId/ticket-types
+├── PEDIDOS/                     # /orders e /users/me/orders
+├── PAGAMENTOS/                  # checkout (/payments) e /orders/:orderId/payments
+├── INGRESSOS/                   # /tickets, /users/me/tickets e /orders/:orderId/tickets
+├── FORNECEDORES/                # CRUD de /suppliers
+├── DESPESAS DO EVENTO/          # /events/:eventId/expenses
+├── TAREFAS DO EVENTO/           # /events/:eventId/tasks
 └── opencollection.yml           # Manifesto da coleção (OpenCollection)
 ```
+
+Cada pasta tem um `folder.yml` com o token herdado pelas requisições
+(`{{tokenAdmin}}`, `{{tokenOrganizador}}` ou `{{tokenComprador}}`) e uma descrição
+do recurso. Dentro da pasta, as requisições seguem a ordem criar, listar, buscar,
+atualizar e remover.
 
 ---
 
@@ -68,12 +80,19 @@ hubee-collections/
 - Para credenciais pessoais, marque a variável do ambiente como secreta (`secret: true` no `environments/*.yml`). O valor fica só no app do Bruno da sua máquina e não é gravado no arquivo.
 
 ### 3.4. Padrão de Nomenclatura das Requisições
-Os arquivos devem refletir o verbo HTTP em caixa alta seguido da intenção funcional:
-- `GET LISTAR TODOS.yml`
-- `GET BUSCA POR ID.yml`
-- `POST CRIA USUARIO.yml`
-- `PATCH ATUALIZAR.yml`
-- `DELETE DELETAR.yml`
+Os arquivos têm o verbo HTTP em caixa alta seguido da ação e do recurso, sem acento, e o `info.name` é igual ao nome do arquivo:
+- `POST CRIAR LOTE.yml`
+- `GET LISTAR LOTES.yml`
+- `GET BUSCAR LOTE.yml`
+- `PATCH ATUALIZAR LOTE.yml`
+- `DELETE REMOVER LOTE.yml` (ou `CANCELAR`, quando a API só muda o status)
+
+Cenários de erro levam o caso no fim do nome: `POST CRIAR EVENTO SEM PERMISSAO.yml`, `GET MEUS INGRESSOS SEM TOKEN.yml`.
+
+### 3.5. Body de Exemplo e Documentação
+- Toda requisição que recebe body traz um exemplo válido, com ids vindos de variáveis (`{{eventId}}`, `{{ticketTypeId}}`...).
+- Todo `docs` segue o formato: `# MÉTODO /rota`, descrição, **Acesso** (público, autenticado, ADMIN ou nível na organização), **Campos** (obrigatórios, opcionais e valores de enum) e **Respostas** (status esperados).
+- Requisições que criam recursos salvam o id com `bru.setEnvVar` no script `after-response`.
 
 ---
 

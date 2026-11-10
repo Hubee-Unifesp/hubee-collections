@@ -1,0 +1,16 @@
+info:
+  name: PAGAMENTOS
+  type: folder
+  seq: 12
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+docs:
+  content: |-
+    Pagamento de pedidos. O comprador paga pelo checkout (`POST /payments`), que
+    confirma o pagamento e emite os ingressos numa transação. Registrar e alterar
+    pagamento à mão (`/orders/:orderId/payments`) é só `ADMIN` (`{{tokenAdmin}}`).
+  type: text/markdown

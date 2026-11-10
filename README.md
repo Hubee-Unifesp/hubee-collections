@@ -1,78 +1,71 @@
 # Hubee Collections
 
-Coleção de requisições da API Hubee para uso com o [Bruno](https://www.usebruno.com/).
+Coleção [Bruno](https://www.usebruno.com/) com todas as rotas da [`hubee-api`](https://github.com/Hubee-Unifesp/hubee-api), no formato OpenCollection (`.yml`). Cada pasta é um recurso da API, com o CRUD completo, body de exemplo e documentação (rota, perfil de acesso, campos e respostas) na aba **Docs** de cada requisição.
 
 ## Como usar
 
-1. Instale o Bruno.
-2. Abra o Bruno e selecione **Open Collection**.
-3. Escolha a pasta deste repositório.
-4. Crie ou importe as requisições dentro desta coleção.
+1. Instale o Bruno e abra esta pasta em **Open Collection**.
+2. Selecione o ambiente `local` (`http://localhost:3000`) ou `production` (`https://hubee-api-1.onrender.com`).
+3. Em **Environments**, preencha as variáveis secretas de login (ficam só na sua máquina e não são gravadas nos arquivos):
 
-## Organização sugerida
+   | Variáveis | Usuário |
+   | --- | --- |
+   | `emailAdmin` / `senhaAdmin` | role `ADMIN` da plataforma (no seed: `admin@hubee.com.br`, senha de `SEED_ADMIN_PASSWORD`) |
+   | `emailOrganizador` / `senhaOrganizador` | usuário com vínculo aceito e `permission = full` na organização `organizerId` |
+   | `emailComprador` / `senhaComprador` | usuário comum, sem vínculo na organização, com CPF e data de nascimento no perfil |
 
-- `EVENTOS/`, `FORNECEDOR/`, `INGRESSOS/`, `LOCAL/`, `ORGANIZACOES/`, `PEDIDOS/`, `USUARIOS/`: requisições por domínio
-- `environments/local.yml`: ambiente local com `baseUrl` em `http://localhost:3000`
-- `environments/production.yml`: ambiente de produção
+4. Preencha as variáveis comuns que não são criadas pela collection: `organizerId` (organização do organizador), `venueId` (se não for rodar LOCAIS), `ticketTypeId` e `soldOutTicketTypeId` (se não for rodar LOTES DE INGRESSO).
+5. Rode os três logins da pasta **AUTH**. Eles salvam `tokenAdmin`, `tokenOrganizador` e `tokenComprador`, herdados pelas pastas conforme o perfil que as rotas exigem.
 
-Nas requisições, use `{{baseUrl}}` como host. No Bruno, selecione o ambiente `local` antes de executar uma requisição.
+## Estrutura
 
-## GitHub
+As pastas seguem a ordem do fluxo da API e, dentro de cada uma, a ordem **criar → listar → buscar → atualizar → remover**.
 
-A coleção usa só o formato OpenCollection (`.yml`). O Bruno lê um formato por coleção, então arquivos `.bru` não aparecem no app: não crie `.bru` nem `bruno.json`.
+| # | Pasta | Rota base | Token da pasta | Variável salva |
+| -: | :--- | :--- | :--- | :--- |
+| 1 | `HEALTH` | `/health` | nenhum | — |
+| 2 | `AUTH` | `/auth` | nenhum | `tokenAdmin`, `tokenOrganizador`, `tokenComprador`, `adminUserId`, `registeredUserId` |
+| 3 | `USUARIOS` | `/users` | admin | `userId`, `userToDeleteId` |
+| 4 | `MINHA CONTA` | `/users/me` | comprador | — |
+| 5 | `ORGANIZACOES` | `/organizations` | organizador | `organizationId` |
+| 6 | `MEMBROS DA ORGANIZACAO` | `/organizations/:orgId/users` | admin | — |
+| 7 | `LOCAIS` | `/venues` | organizador | `venueId` |
+| 8 | `EVENTOS` (+ `CENARIOS DE BUSCA`) | `/events` | organizador | `eventId` |
+| 9 | `ORGANIZACOES DO EVENTO` | `/events/:eventId/organizations` | admin | — |
+| 10 | `LOTES DE INGRESSO` | `/events/:eventId/ticket-types` | organizador | `ticketTypeId` |
+| 11 | `PEDIDOS` | `/orders`, `/users/me/orders` | comprador | `orderId`, `orderToCancelId` |
+| 12 | `PAGAMENTOS` | `/payments`, `/orders/:orderId/payments` | comprador | — |
+| 13 | `INGRESSOS` | `/tickets`, `/orders/:orderId/tickets` | comprador | `ticketId` |
+| 14 | `FORNECEDORES` | `/suppliers` | organizador | `supplierId` |
+| 15 | `DESPESAS DO EVENTO` | `/events/:eventId/expenses` | admin | `expenseId` |
+| 16 | `TAREFAS DO EVENTO` | `/events/:eventId/tasks` | admin | `taskId` |
 
-Os arquivos `.yml` e a documentação devem ser versionados. Não versione tokens, senhas ou chaves de API: use variáveis secretas no ambiente (`secret: true`).
+Requisições que exigem outro perfil trocam o token na própria aba **Auth** (por exemplo, `DELETE REMOVER ORGANIZACAO` usa `tokenAdmin`, e `POST CRIAR EVENTO SEM PERMISSAO` usa `tokenComprador`). Os cenários de erro esperados (`... SEM PERMISSAO`, `... SEM TOKEN`, `... LOTE ESGOTADO`, `... SEM ITENS`) têm testes que conferem o status de erro.
 
-## Testes de permissão de organizador (GOL-147)
+## Fluxo de compra completo
 
-As requisições `USUARIOS/POST LOGIN ORGANIZADOR`, `USUARIOS/POST LOGIN COMPRADOR`,
-`USUARIOS/GET PERFIL ME` e as da pasta `EVENTOS/` usam estas variáveis do ambiente `local`:
+1. `AUTH` › os três logins
+2. `ORGANIZACOES` › `POST CRIAR ORGANIZACAO`
+3. `LOCAIS` › `POST CRIAR LOCAL`
+4. `EVENTOS` › `POST CRIAR EVENTO` → `PATCH ATUALIZAR EVENTO` (publica com `status: "published"`)
+5. `LOTES DE INGRESSO` › `POST CRIAR LOTE`
+6. `PEDIDOS` › `POST CRIAR PEDIDO`
+7. `PAGAMENTOS` › `POST PAGAR PEDIDO` (confirma o pagamento e emite os ingressos)
+8. `INGRESSOS` › `GET MEUS INGRESSOS`
 
-| Variável | Tipo | O que colocar |
-| --- | --- | --- |
-| `organizerId` | comum | ID de uma organização em que o organizador tem vínculo aceito com `permission = full`. |
-| `venueId` | comum | ID de um local existente. |
-| `emailOrganizador` / `senhaOrganizador` | secreta | Usuário com esse vínculo aceito na organização. |
-| `emailComprador` / `senhaComprador` | secreta | Usuário comum, sem vínculo na organização. |
-| `tokenOrganizador` / `tokenComprador` | secreta | Preenchidas pelos logins; não edite. |
+As requisições de remoção e cancelamento (`DELETE ...`) apagam registros que as pastas seguintes usam. Ao rodar a coleção inteira, deixe-as para o fim ou rode cada pasta isoladamente. Onde o fluxo precisa remover algo sem quebrar o resto, há um registro descartável: `POST CRIAR USUARIO PARA REMOVER` e `POST CRIAR PEDIDO PARA CANCELAR`.
 
-As variáveis secretas ficam só na sua máquina e não são gravadas nos arquivos versionados.
-Ordem de execução: os dois logins, `GET PERFIL ME` e depois a pasta `EVENTOS`.
-O `POST CRIAR EVENTO` espera `201`, e o `POST CRIAR EVENTO SEM PERMISSAO` espera `403`.
+## Convenções
 
-## Pedidos, checkout e ingressos (GOL-175)
+- Somente OpenCollection (`.yml`). O Bruno lê um formato por coleção: não crie `.bru` nem `bruno.json`.
+- Pastas em caixa alta, sem acento, com o nome do recurso em português (`LOTES DE INGRESSO`, `DESPESAS DO EVENTO`).
+- Requisições com o verbo HTTP seguido da ação: `POST CRIAR LOTE`, `GET LISTAR LOTES`, `GET BUSCAR LOTE`, `PATCH ATUALIZAR LOTE`, `DELETE REMOVER LOTE`.
+- URLs sempre com `{{baseUrl}}` e parâmetros de path (`/events/:id`) preenchidos por variável na aba **Params**. Filtros opcionais de query ficam cadastrados, mas desativados.
+- O token fica no `folder.yml` (bearer com `{{tokenAdmin}}`, `{{tokenOrganizador}}` ou `{{tokenComprador}}`) e as requisições usam `auth: inherit`.
+- Toda requisição tem body de exemplo (quando a rota recebe body) e `docs` no formato: rota, descrição, **Acesso**, **Campos** e **Respostas**.
+- Uploads (avatar e capa do evento) usam `assets/imagem-exemplo.png`; troque o arquivo na aba **Body**.
+- Ao criar ou alterar uma rota na API, atualize a requisição correspondente aqui seguindo o mesmo formato.
 
-As pastas `PEDIDOS/` e `INGRESSOS/` herdam o token do comprador (`tokenComprador`, preenchido por `USUARIOS/POST LOGIN COMPRADOR`). Variáveis novas do ambiente `local`:
+## Segredos
 
-| Variável | Tipo | O que colocar |
-| --- | --- | --- |
-| `ticketTypeId` | comum | ID de um lote com saldo de pelo menos 2 ingressos, de um evento publicado e com vendas abertas. |
-| `soldOutTicketTypeId` | comum | ID de um lote esgotado (por exemplo, com `quantity` 0). |
-| `orderId` / `ticketId` | comum | Preenchidas pelas requisições; não edite. |
-
-O comprador precisa ter CPF e data de nascimento no perfil, senão `POST CRIAR PEDIDO` responde 403.
-Ordem de execução: o login do comprador, a pasta `PEDIDOS` (o `POST PAGAR PEDIDO` por último) e depois a pasta `INGRESSOS`.
-
-## Fornecedores (GOL-202)
-
-A pasta `FORNECEDOR/` herda o token do organizador (`tokenOrganizador`, preenchido por `USUARIOS/POST LOGIN ORGANIZADOR`) e cobre o CRUD e os filtros de busca (`search` e `category`) em `/suppliers`. O `POST FORNECEDOR` salva o ID criado na variável `supplierId` para uso em `GET FORNECEDOR (por id)`, `PATCH FORNECEDOR` e `DELETE FORNECEDOR`.
-
-## Organizações (GOL-197 / GOL-198)
-
-A pasta `ORGANIZACOES/` cobre o fluxo de criação, consulta, atualização e exclusão em `/organizations`:
-
-- `POST CRIAR ORGANIZACAO` cria uma organização com qualquer usuário autenticado, vincula automaticamente o criador como `admin` (`permission = full`, `invite_status = accepted`, nível `manage`) e salva o ID em `{{organizationId}}`.
-- `PATCH ATUALIZAR ORGANIZACAO` valida a edição por usuário com nível `manage`.
-- `PATCH ORGANIZACAO SEM PERMISSAO` valida o bloqueio RBAC (`403 Forbidden` para membro sem `manage` ou `404 Not Found` para não-membro).
-
-## Gerenciamento de eventos e lotes de ingressos (GOL-207)
-
-A pasta `EVENTOS/` cobre o ciclo completo do organizador para eventos (`/events`) e lotes de ingressos (`/events/:eventId/ticket-types`) usando `{{tokenOrganizador}}`, `{{eventId}}` e `{{ticketTypeId}}`:
-
-- `POST CRIAR EVENTO` cria o evento em rascunho (`draft`) e salva o ID em `{{eventId}}`.
-- `PATCH ATUALIZAR EVENTO` atualiza os dados e publica o evento (`status: "published"`).
-- `POST CRIAR LOTE INGRESSO` cria um lote vinculado ao evento `{{eventId}}` e salva o ID em `{{ticketTypeId}}`.
-- `GET LISTAR LOTES DO EVENTO` lista os lotes do evento com o saldo calculado `available`.
-- `PATCH ATUALIZAR LOTE INGRESSO` atualiza nome, preço e quantidade do lote `{{ticketTypeId}}`.
-- `DELETE REMOVER LOTE INGRESSO` remove o lote `{{ticketTypeId}}` quando não há ingressos ou pedidos vinculados (`204 No Content`).
-- `DELETE CANCELAR EVENTO` cancela o evento `{{eventId}}` exigindo nível `manage` (`204 No Content`).
+Não versione tokens, senhas ou chaves de API. Credenciais e tokens ficam em variáveis secretas do ambiente (`secret: true`), cujo valor o Bruno guarda só na sua máquina.

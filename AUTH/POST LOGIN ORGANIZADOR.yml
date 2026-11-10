@@ -1,0 +1,51 @@
+info:
+  name: POST LOGIN ORGANIZADOR
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{emailOrganizador}}",
+        "password": "{{senhaOrganizador}}"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 200) {
+          bru.setEnvVar("tokenOrganizador", res.getBody().access_token);
+        }
+    - type: tests
+      code: |-
+        test("responde 200 com access_token", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().access_token).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /auth/login
+
+  Login de um usuário com vínculo aceito em uma organização (organization_users),
+  com permission = full. Salva o JWT em {{tokenOrganizador}}.
+
+  **Acesso:** público (sem token)
+
+  **Body:** `email` e `password` (obrigatórios).
+
+  **Respostas**
+
+  - `200` `{ access_token }`
+  - `401` credenciais inválidas

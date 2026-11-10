@@ -1,0 +1,37 @@
+info:
+  name: DELETE REMOVER LOCAL
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/venues/:id"
+  params:
+    - name: id
+      value: "{{venueId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /venues/:id
+
+  Remove o local. Rode por último: eventos usam `{{venueId}}`.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `204` removido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado
+  - `409` local com eventos futuros vinculados

@@ -1,0 +1,42 @@
+info:
+  name: DELETE REMOVER USUARIO
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/users/:id"
+  params:
+    - name: id
+      value: "{{userToDeleteId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /users/:id
+
+  Remove (soft delete) o usuário descartável criado em POST CRIAR USUARIO PARA REMOVER.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `204` removido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

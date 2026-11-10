@@ -1,0 +1,41 @@
+info:
+  name: GET LISTAR TAREFAS
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events/:eventId/tasks"
+  params:
+    - name: eventId
+      value: "{{eventId}}"
+      type: path
+    - name: status
+      value: pending
+      type: query
+      disabled: true
+    - name: responsibleUserId
+      value: "{{adminUserId}}"
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events/:eventId/tasks
+
+  Lista as tarefas do evento, com filtros opcionais por `status` e `responsibleUserId`.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `200` array de tarefas
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão

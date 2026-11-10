@@ -1,0 +1,38 @@
+info:
+  name: PATCH ALTERAR MINHA SENHA
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/me/password"
+  body:
+    type: json
+    data: |-
+      {
+        "currentPassword": "{{senhaComprador}}",
+        "newPassword": "NovaSenha456!"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /users/me/password
+
+  Troca a senha do usuário logado. **Cuidado:** depois disso, atualize `senhaComprador` no ambiente.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Campos:** `currentPassword` e `newPassword` (obrigatórios).
+
+  **Respostas**
+
+  - `204` senha alterada
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token inválido ou senha atual incorreta

@@ -1,0 +1,13 @@
+info:
+  name: ORGANIZACOES DO EVENTO
+  type: folder
+  seq: 9
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+docs:
+  content: Organizações vinculadas a um evento (`/events/:eventId/organizations`). Todas as rotas exigem `ADMIN` (`{{tokenAdmin}}`). Usa `{{eventId}}` e `{{organizationId}}`.
+  type: text/markdown

@@ -1,0 +1,59 @@
+info:
+  name: POST REGISTRAR
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register"
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Maria Souza",
+        "email": "{{$randomEmail}}",
+        "password": "Senha123!",
+        "signupIntent": "BUY"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("registeredUserId", res.getBody().user.id);
+        }
+    - type: tests
+      code: |-
+        test("responde 201 com token e usuário sem senha", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().access_token).to.be.a("string");
+          expect(res.getBody().user).to.not.have.property("password");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /auth/register
+
+  Cria a conta de um usuário (perfil `CLIENT`) e já devolve o token de acesso. Salva o id em `{{registeredUserId}}`.
+
+  **Acesso:** público (sem token)
+
+  **Campos**
+  - `fullName` (string, 1–200) — obrigatório
+  - `email` (e-mail único) — obrigatório
+  - `password` (6–20 caracteres) — obrigatório
+  - `signupIntent` (`BUY` | `ORGANIZE`) — opcional
+
+  **Respostas**
+
+  - `201` `{ access_token, user }`
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `409` e-mail já cadastrado

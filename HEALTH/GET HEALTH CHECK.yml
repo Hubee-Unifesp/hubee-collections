@@ -1,0 +1,38 @@
+info:
+  name: GET HEALTH CHECK
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/health"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a API e o banco no ar", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().status).to.equal("ok");
+          expect(res.getBody().database.status).to.equal("up");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /health
+
+  Verifica se a API está no ar e se o banco responde.
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `200` `{ status: "ok", database: { status: "up", latencyMs } }`
+  - `503` banco fora do ar

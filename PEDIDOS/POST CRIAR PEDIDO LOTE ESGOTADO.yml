@@ -33,4 +33,12 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /orders
+
   Compra de um lote sem saldo ({{soldOutTicketTypeId}}). Nenhum pedido é gravado.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `422` lote esgotado

@@ -39,5 +39,14 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # GET /tickets
+
   Lista os ingressos emitidos para o comprador logado, do mais recente para o
   mais antigo. Salva o primeiro em {{ticketId}}.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `200` array de ingressos com evento, local e lote
+  - `401` token ausente ou inválido

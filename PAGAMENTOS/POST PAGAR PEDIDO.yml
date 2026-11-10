@@ -1,0 +1,59 @@
+info:
+  name: POST PAGAR PEDIDO
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/payments"
+  body:
+    type: json
+    data: |-
+      {
+        "orderId": "{{orderId}}",
+        "paymentMethod": "pix"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 201 com o pagamento confirmado", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().status).to.equal("confirmado");
+          expect(res.getBody().orderId).to.equal(bru.getEnvVar("orderId"));
+          expect(res.getBody().paidAt).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /payments
+
+  Checkout do pedido {{orderId}}. O valor pago é sempre o total do pedido. Numa
+  única transação o pagamento é confirmado, o pedido passa para pago e os
+  ingressos são emitidos (veja a pasta INGRESSOS). Gateway simulado: sempre
+  aprova. Rodar de novo responde 422, pois o pedido já está pago.
+
+  **Acesso:** autenticado (qualquer usuário logado); dono do pedido
+
+  **Campos**
+  - `orderId` (UUID) — obrigatório
+  - `paymentMethod`: `cartao_credito` | `cartao_debito` | `pix` | `boleto` | `transferencia` — obrigatório
+
+  O valor **não** vem do cliente: é sempre o total do pedido.
+
+  **Respostas**
+
+  - `201` pagamento `confirmado`
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `404` pedido inexistente ou de outra pessoa
+  - `409` pedido já possui pagamento
+  - `422` pedido já pago ou cancelado

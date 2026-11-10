@@ -1,0 +1,43 @@
+info:
+  name: GET BUSCAR EVENTO
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events/:id"
+  params:
+    - name: id
+      value: "{{eventId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o evento", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("eventId"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events/:id
+
+  Detalhe do evento com local e lotes.
+
+  **Acesso:** público (sem token); rascunho só para ADMIN ou membro
+
+  Evento não publicado responde 404 para quem não é ADMIN nem membro da organização.
+
+  **Respostas**
+
+  - `200` detalhe do evento
+  - `404` recurso não encontrado

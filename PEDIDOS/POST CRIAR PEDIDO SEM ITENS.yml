@@ -31,4 +31,12 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /orders
+
   A validação do corpo recusa um pedido sem itens.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `400` pedido sem itens

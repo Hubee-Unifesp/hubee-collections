@@ -41,8 +41,23 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /organizations
+
   Usuário autenticado (qualquer role, sem necessidade de ser ADMIN global) cria
   uma organização em /organizations. Em transação única no banco, a API define
   representativeId = user.id e cria automaticamente o vínculo em organization_users
   com role = 'admin', permission = 'full' e invite_status = 'accepted' (nível manage).
   Salva o id retornado em {{organizationId}} para as demais requisições da pasta.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Campos**
+  - `name` (string, até 255) — obrigatório no POST
+  - `description` (string) — opcional
+  - `representativeId` (UUID de usuário) — opcional
+
+  **Respostas**
+
+  - `201` organização criada
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido

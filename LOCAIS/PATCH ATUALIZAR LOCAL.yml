@@ -1,0 +1,54 @@
+info:
+  name: PATCH ATUALIZAR LOCAL
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/venues/:id"
+  params:
+    - name: id
+      value: "{{venueId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "maxCapacity": 650,
+        "address": {
+          "complement": "Térreo"
+        }
+      }
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /venues/:id
+
+  Atualização parcial do local (inclusive campos do endereço).
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `name` (string, até 255) — obrigatório no POST
+  - `maxCapacity` (inteiro positivo) — obrigatório no POST
+  - `address` (objeto) **ou** `addressId` (UUID de endereço existente)
+    - `zipCode`, `street`, `number`, `neighborhood`, `city`, `state` (UF, 2 letras) — obrigatórios
+    - `complement`, `country` — opcionais
+  - `active` (boolean) — só no PATCH
+
+  **Respostas**
+
+  - `200` local atualizado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

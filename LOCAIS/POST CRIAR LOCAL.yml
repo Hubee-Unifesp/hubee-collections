@@ -1,0 +1,68 @@
+info:
+  name: POST CRIAR LOCAL
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/venues"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Centro de Eventos Hubee",
+        "maxCapacity": 500,
+        "address": {
+          "zipCode": "01310-100",
+          "street": "Avenida Paulista",
+          "number": "1000",
+          "complement": "Sala 5",
+          "neighborhood": "Bela Vista",
+          "city": "São Paulo",
+          "state": "SP",
+          "country": "Brasil"
+        }
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("venueId", res.getBody().id);
+        }
+    - type: tests
+      code: |-
+        test("responde 201 com o local criado", function () {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /venues
+
+  Cria um local com endereço. Salva o id em `{{venueId}}`.
+
+  **Acesso:** `ADMIN` ou membro com nível `write` em alguma organização
+
+  **Campos**
+  - `name` (string, até 255) — obrigatório no POST
+  - `maxCapacity` (inteiro positivo) — obrigatório no POST
+  - `address` (objeto) **ou** `addressId` (UUID de endereço existente)
+    - `zipCode`, `street`, `number`, `neighborhood`, `city`, `state` (UF, 2 letras) — obrigatórios
+    - `complement`, `country` — opcionais
+  - `active` (boolean) — só no PATCH
+
+  **Respostas**
+
+  - `201` local criado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão

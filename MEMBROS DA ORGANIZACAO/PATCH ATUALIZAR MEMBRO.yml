@@ -1,0 +1,51 @@
+info:
+  name: PATCH ATUALIZAR MEMBRO
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizations/:orgId/users/:userId"
+  params:
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+    - name: userId
+      value: "{{userId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "role": "admin",
+        "permission": "full"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /organizations/:orgId/users/:userId
+
+  Muda papel, permissão ou status do convite.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `userId` (UUID) — obrigatório no POST (só no body)
+  - `role`: `admin` | `member`
+  - `permission`: `full` | `read_only`
+  - `inviteStatus`: `pending` | `accepted` | `rejected` (padrão `pending`)
+
+  **Respostas**
+
+  - `200` vínculo atualizado
+  - `400` body vazio ou inválido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

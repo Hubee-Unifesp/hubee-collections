@@ -1,0 +1,49 @@
+info:
+  name: POST CRIAR PEDIDO PARA CANCELAR
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseUrl}}/orders"
+  body:
+    type: json
+    data: |-
+      {
+        "items": [
+          {
+            "ticketTypeId": "{{ticketTypeId}}",
+            "quantity": 1
+          }
+        ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("orderToCancelId", res.getBody().id);
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /orders
+
+  Cria um segundo pedido, descartável, para os requests de cancelamento. Salva o id em `{{orderToCancelId}}`.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `201` pedido `pendente`
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `422` lote esgotado ou vendas fechadas

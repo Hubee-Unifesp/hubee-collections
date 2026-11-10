@@ -1,0 +1,55 @@
+info:
+  name: POST REGISTRAR PAGAMENTO
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/orders/:orderId/payments"
+  params:
+    - name: orderId
+      value: "{{orderId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "paymentMethod": "cartao_credito",
+        "amount": 70,
+        "status": "pendente"
+      }
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /orders/:orderId/payments
+
+  Registra manualmente o pagamento de um pedido sem pagamento.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `paymentMethod`: `cartao_credito` | `cartao_debito` | `pix` | `boleto` | `transferencia` — obrigatório no POST, não muda no PATCH
+  - `amount` (número, 2 casas, ≥ 0) — obrigatório no POST
+  - `status`: `pendente` | `confirmado` | `recusado` | `estornado`
+  - `paidAt` (ISO 8601) — opcional
+
+  No fluxo da collection o pedido `{{orderId}}` já foi pago pelo checkout, então este request responde 409/422; troque o pedido na aba Params.
+
+  **Respostas**
+
+  - `201` pagamento registrado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado
+  - `409` pedido já possui pagamento
+  - `422` pedido pago ou cancelado

@@ -1,0 +1,46 @@
+info:
+  name: GET FILTRO POR CIDADE E CATEGORIA
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events?city=São Paulo&category=shows"
+  params:
+    - name: city
+      value: São Paulo
+      type: query
+    - name: category
+      value: shows
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("só retorna eventos da cidade e categoria pedidas", function () {
+          expect(res.getStatus()).to.equal(200);
+          res.getBody().data.forEach(function (event) {
+            expect(event.venueCity.toLowerCase()).to.equal("são paulo");
+            expect(event.category.toLowerCase()).to.equal("shows");
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events
+
+  Cidade e categoria comparam sem diferenciar maiúsculas/minúsculas (valor exato, não "contém").
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `200` página de eventos

@@ -36,5 +36,13 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /events
+
   Usuário comum (comprador, sem vínculo na organização) tenta criar um evento
   na organização {{organizerId}}. A API deve responder 403 Forbidden.
+
+  **Acesso:** comprador sem vínculo (cenário de erro)
+
+  **Respostas**
+
+  - `403` sem permissão na organização

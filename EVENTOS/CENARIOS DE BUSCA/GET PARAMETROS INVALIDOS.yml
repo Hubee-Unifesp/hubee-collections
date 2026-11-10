@@ -1,0 +1,43 @@
+info:
+  name: GET PARAMETROS INVALIDOS
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events?startDate=2026-99-99&limit=abc"
+  params:
+    - name: startDate
+      value: 2026-99-99
+      type: query
+    - name: limit
+      value: abc
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 400 com as mensagens de validação", function () {
+          expect(res.getStatus()).to.equal(400);
+          expect(res.getBody().message).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events
+
+  Data malformada, `limit`/`page` não numérico, `limit` acima de 100 ou `endDate` anterior a `startDate` respondem 400.
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
