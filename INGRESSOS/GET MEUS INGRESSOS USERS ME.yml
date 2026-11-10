@@ -1,0 +1,38 @@
+info:
+  name: GET MEUS INGRESSOS USERS ME
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/me/tickets"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a mesma lista de GET /tickets", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array").that.is.not.empty;
+          expect(res.getBody()[0]).to.include.keys("qrCode", "event", "ticketType");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /users/me/tickets
+
+  Alias de GET /tickets sob o perfil do usuário.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `200` mesma lista de GET /tickets
+  - `401` token ausente ou inválido

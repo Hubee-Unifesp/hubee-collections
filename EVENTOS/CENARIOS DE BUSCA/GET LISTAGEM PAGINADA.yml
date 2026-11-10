@@ -1,0 +1,59 @@
+info:
+  name: GET LISTAGEM PAGINADA
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events?page=1&limit=10"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "10"
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a paginação pedida", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().data).to.be.an("array");
+          expect(res.getBody().meta.page).to.equal(1);
+          expect(res.getBody().meta.limit).to.equal(10);
+        });
+
+        test("sem token só lista eventos publicados", function () {
+          res.getBody().data.forEach(function (event) {
+            expect(event.status).to.equal("published");
+          });
+        });
+
+        test("cada item traz os dados do card", function () {
+          res.getBody().data.forEach(function (event) {
+            expect(event).to.include.all.keys("venueName", "venueCity", "minPrice", "minPriceBatch");
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events
+
+  Sem token, a listagem paginada só traz eventos `published`, com os dados do card.
+
+  **Acesso:** público (sem token)
+
+  Padrões: `page` 1, `limit` 20 (máx. 100). Resposta: `{ data: [...], meta: { page, limit, total, totalPages } }`.
+
+  **Respostas**
+
+  - `200` página de eventos

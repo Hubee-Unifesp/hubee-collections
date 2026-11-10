@@ -48,5 +48,28 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /events
+
   Organizador com nível write ou manage na organização {{organizerId}} cria um
   evento. O evento nasce como rascunho (draft).
+
+  **Acesso:** `ADMIN` ou membro com nível `write` na organização de `organizerId`
+
+  **Campos**
+  - `name` (string, até 255) — obrigatório no POST
+  - `organizerId` (UUID da organização) — obrigatório no POST, não muda no PATCH
+  - `venueId` (UUID do local) — obrigatório no POST
+  - `startDate`, `endDate` (ISO 8601) — obrigatórios no POST
+  - `salesStartDate` (ISO 8601) — opcional
+  - `description`, `category`, `edition` (string) — opcionais
+  - `ageRating`: `L` | `10` | `12` | `14` | `16` | `18`
+  - `photoUrl` (URL) — opcional; para enviar arquivo use PATCH ENVIAR CAPA DO EVENTO
+  - `featured` (boolean) — opcional
+  - `status`: `draft` | `published` | `finished` | `cancelled` — só no PATCH (`cancelled` exige `manage`)
+
+  **Respostas**
+
+  - `201` evento criado (`draft`)
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão

@@ -30,8 +30,20 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # DELETE /events/:id
+
   Cancela o evento {{eventId}} (altera status para `cancelled`).
   Protegido por @OrgAccess('manage', { from: 'event', param: 'id' }):
   - Exige nível manage (role = 'admin' e permission = 'full' na organização do evento) ou ADMIN global.
   - Membros com nível read ou write recebem 403 Forbidden; não-membros recebem 404 Not Found.
   - Se o evento já estiver cancelado, responde 422 Unprocessable Entity.
+
+  **Acesso:** `ADMIN` ou administrador da organização (nível `manage`)
+
+  **Respostas**
+
+  - `204` cancelado
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado
+  - `422` evento já cancelado

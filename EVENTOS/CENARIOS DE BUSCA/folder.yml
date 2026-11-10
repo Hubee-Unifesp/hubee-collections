@@ -1,0 +1,8 @@
+info:
+  name: CENARIOS DE BUSCA
+  type: folder
+  seq: 9
+
+docs:
+  content: Cenários de teste da busca pública de eventos (`GET /events`). Rode a pasta pelo Runner para validar paginação, filtros e erros.
+  type: text/markdown

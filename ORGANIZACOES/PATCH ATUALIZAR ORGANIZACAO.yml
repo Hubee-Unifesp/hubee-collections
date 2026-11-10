@@ -39,7 +39,24 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # PATCH /organizations/:id
+
   Atualiza parcialmente os dados da organização {{organizationId}}.
   Protegido por @OrgAccess('manage', { from: 'param', param: 'id' }): exige que
   o usuário autenticado possua vínculo aceito com nível manage (role = 'admin' e
   permission = 'full') na organização ou seja ADMIN global da plataforma.
+
+  **Acesso:** `ADMIN` ou administrador da organização (nível `manage`)
+
+  **Campos**
+  - `name` (string, até 255) — obrigatório no POST
+  - `description` (string) — opcional
+  - `representativeId` (UUID de usuário) — opcional
+
+  **Respostas**
+
+  - `200` organização atualizada
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

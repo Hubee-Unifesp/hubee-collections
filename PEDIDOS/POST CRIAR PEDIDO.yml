@@ -47,6 +47,26 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # POST /orders
+
   Comprador cria um pedido com 2 ingressos do lote {{ticketTypeId}}. O pedido
   nasce pendente e reserva o saldo do lote; nenhum ingresso é emitido até o
   pagamento. Salva o id em {{orderId}}.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Campos**
+  - `items[]` (1–20) — obrigatório
+    - `ticketTypeId` (UUID do lote)
+    - `quantity` (1–10)
+
+  O total **não** vem do cliente: o service usa o preço atual de cada lote.
+
+  **Respostas**
+
+  - `201` pedido `pendente`
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem CPF ou data de nascimento
+  - `404` lote não encontrado
+  - `422` lote esgotado, quantidade acima do saldo ou vendas fechadas

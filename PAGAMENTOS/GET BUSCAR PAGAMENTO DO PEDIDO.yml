@@ -1,0 +1,42 @@
+info:
+  name: GET BUSCAR PAGAMENTO DO PEDIDO
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/orders/:orderId/payments"
+  params:
+    - name: orderId
+      value: "{{orderId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o pagamento do pedido", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().orderId).to.equal(bru.getEnvVar("orderId"));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /orders/:orderId/payments
+
+  Consulta o pagamento do pedido `{{orderId}}`.
+
+  **Acesso:** autenticado (qualquer usuário logado); dono do pedido ou `ADMIN`
+
+  **Respostas**
+
+  - `200` pagamento
+  - `401` token ausente ou inválido
+  - `404` sem pagamento, pedido inexistente ou de outra pessoa

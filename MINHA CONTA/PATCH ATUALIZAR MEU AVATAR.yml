@@ -1,0 +1,38 @@
+info:
+  name: PATCH ATUALIZAR MEU AVATAR
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/me/avatar"
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - assets/imagem-exemplo.png
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /users/me/avatar
+
+  Envia a foto de perfil (multipart, campo `file`).
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  Aceita `.jpg`, `.jpeg` ou `.png` de até 2MB. Troque o arquivo na aba Body.
+
+  **Respostas**
+
+  - `200` perfil com `avatarUrl`
+  - `400` arquivo ausente, inválido ou grande demais
+  - `401` token ausente ou inválido

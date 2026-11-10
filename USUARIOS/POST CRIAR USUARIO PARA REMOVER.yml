@@ -1,0 +1,56 @@
+info:
+  name: POST CRIAR USUARIO PARA REMOVER
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/users"
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Usuário Descartável",
+        "email": "{{$randomEmail}}",
+        "password": "Senha123!"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("userToDeleteId", res.getBody().id);
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # POST /users
+
+  Cria um usuário descartável para o DELETE REMOVER USUARIO. Salva o id em `{{userToDeleteId}}`.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `fullName` (string, 1–200) — obrigatório no POST
+  - `email` (e-mail único) — obrigatório no POST
+  - `password` (6–20 caracteres) — obrigatório no POST
+  - `phone` (só números) — opcional
+  - `cpf` (CPF válido, único) — opcional
+  - `birthDate` (data ISO, não futura) — opcional
+  - `signupIntent` (`BUY` | `ORGANIZE`) — opcional
+
+  **Respostas**
+
+  - `201` usuário criado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `409` e-mail já cadastrado

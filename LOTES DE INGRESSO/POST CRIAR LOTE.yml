@@ -1,0 +1,68 @@
+info:
+  name: POST CRIAR LOTE
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/events/:eventId/ticket-types"
+  params:
+    - name: eventId
+      value: "{{eventId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "batch": "1º Lote Promocional",
+        "price": 35.00,
+        "quantity": 100
+      }
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("ticketTypeId", res.getBody().id);
+        }
+    - type: tests
+      code: |-
+        test("responde 201 Created com lote vinculado ao evento", function () {
+          expect(res.getStatus()).to.equal(201);
+          expect(res.getBody().eventId).to.equal(bru.getEnvVar("eventId"));
+          expect(res.getBody().batch).to.equal("1º Lote Promocional");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /events/:eventId/ticket-types
+
+  Cria um lote de ingressos (ticket-type) no evento {{eventId}} e salva o ID em {{ticketTypeId}}.
+  Protegido por @OrgAccess('write', { from: 'event', param: 'eventId' }) (GOL-206):
+  - Exige vínculo aceito com nível write ou manage na organização do evento (ou ADMIN global).
+  - Não-membros recebem 404 Not Found; membros read recebem 403 Forbidden.
+
+  **Acesso:** `ADMIN` ou membro com nível `write` na organização do evento
+
+  **Campos**
+  - `batch` (string, até 100) — nome do lote, obrigatório no POST
+  - `price` (número, 2 casas, ≥ 0) — obrigatório no POST
+  - `quantity` (inteiro ≥ 0, padrão 0) — ingressos à venda
+
+  **Respostas**
+
+  - `201` lote criado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

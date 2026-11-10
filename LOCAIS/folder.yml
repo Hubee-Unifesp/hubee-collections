@@ -1,0 +1,16 @@
+info:
+  name: LOCAIS
+  type: folder
+  seq: 7
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+docs:
+  content: |-
+    Locais físicos de eventos em `/venues`. Leitura pública; criar exige nível
+    `write` em alguma organização (`{{tokenOrganizador}}`); editar e remover são só
+    `ADMIN` (`{{tokenAdmin}}`). O POST CRIAR LOCAL salva o id em `{{venueId}}`.
+  type: text/markdown

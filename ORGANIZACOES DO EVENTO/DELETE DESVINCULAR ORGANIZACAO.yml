@@ -1,0 +1,37 @@
+info:
+  name: DELETE DESVINCULAR ORGANIZACAO
+  type: http
+  seq: 3
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/:eventId/organizations/:orgId"
+  params:
+    - name: eventId
+      value: "{{eventId}}"
+      type: path
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /events/:eventId/organizations/:orgId
+
+  Remove o vínculo da organização com o evento.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `204` removido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

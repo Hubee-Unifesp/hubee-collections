@@ -1,0 +1,43 @@
+info:
+  name: PATCH ENVIAR CAPA DO EVENTO
+  type: http
+  seq: 7
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/events/:id/photo"
+  params:
+    - name: id
+      value: "{{eventId}}"
+      type: path
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - assets/imagem-exemplo.png
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /events/:id/photo
+
+  Envia a imagem de capa (multipart, campo `file`). O arquivo vai para o storage e a URL fica em `photoUrl`.
+
+  **Acesso:** `ADMIN` ou membro com nível `write` na organização do evento
+
+  Aceita `.jpg`, `.jpeg` ou `.png` de até 2MB. Troque o arquivo na aba Body.
+
+  **Respostas**
+
+  - `200` evento com `photoUrl`
+  - `400` arquivo ausente, inválido ou grande demais
+  - `401` token ausente ou inválido
+  - `404` recurso não encontrado

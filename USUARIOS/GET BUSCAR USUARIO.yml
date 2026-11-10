@@ -1,0 +1,35 @@
+info:
+  name: GET BUSCAR USUARIO
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/:id"
+  params:
+    - name: id
+      value: "{{userId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /users/:id
+
+  Busca um usuário pelo id.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `200` usuário
+  - `400` id não é UUID
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

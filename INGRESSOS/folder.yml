@@ -1,7 +1,7 @@
 info:
   name: INGRESSOS
   type: folder
-  seq: 5
+  seq: 13
 
 request:
   auth:
@@ -10,6 +10,8 @@ request:
 
 docs:
   content: |-
-    Ingressos do comprador logado (GOL-175). Rode antes a pasta PEDIDOS até o
-    POST PAGAR PEDIDO: os ingressos só existem depois que o pedido é pago.
+    Ingressos (GOL-175). Os ingressos são emitidos pelo checkout (PAGAMENTOS/POST
+    PAGAR PEDIDO); rode-o antes. Consultar é para o comprador ou o titular (demais
+    recebem 404), com `{{tokenComprador}}`. Emitir à mão e mudar status são só
+    `ADMIN` (`{{tokenAdmin}}`).
   type: text/markdown

@@ -1,0 +1,49 @@
+info:
+  name: PATCH ATUALIZAR PAGAMENTO
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/orders/:orderId/payments"
+  params:
+    - name: orderId
+      value: "{{orderId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "status": "estornado"
+      }
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /orders/:orderId/payments
+
+  Atualiza status, valor ou data do pagamento (ex.: confirmar, recusar, estornar).
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Campos**
+  - `paymentMethod`: `cartao_credito` | `cartao_debito` | `pix` | `boleto` | `transferencia` — obrigatório no POST, não muda no PATCH
+  - `amount` (número, 2 casas, ≥ 0) — obrigatório no POST
+  - `status`: `pendente` | `confirmado` | `recusado` | `estornado`
+  - `paidAt` (ISO 8601) — opcional
+
+  **Respostas**
+
+  - `200` pagamento atualizado
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

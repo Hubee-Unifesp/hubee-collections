@@ -1,0 +1,17 @@
+info:
+  name: LOTES DE INGRESSO
+  type: folder
+  seq: 10
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+docs:
+  content: |-
+    Lotes (ticket types) do evento `{{eventId}}` em `/events/:eventId/ticket-types`.
+    Leitura pública para evento publicado; escrita exige nível `write` na
+    organização do evento (`{{tokenOrganizador}}`, GOL-206). O POST CRIAR LOTE salva
+    o id em `{{ticketTypeId}}`.
+  type: text/markdown

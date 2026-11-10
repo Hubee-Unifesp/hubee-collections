@@ -1,0 +1,16 @@
+info:
+  name: MINHA CONTA
+  type: folder
+  seq: 4
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+docs:
+  content: |-
+    Rotas do próprio usuário logado (`/users/me/*`), com o token do comprador
+    (`{{tokenComprador}}`). Pedidos e ingressos do usuário (`/users/me/orders` e
+    `/users/me/tickets`) ficam nas pastas PEDIDOS e INGRESSOS.
+  type: text/markdown

@@ -29,5 +29,13 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # GET /organizations
+
   Lista organizações cadastradas em /organizations com filtro opcional por nome
   parcial e case-insensitive (query param name).
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `200` array de organizações

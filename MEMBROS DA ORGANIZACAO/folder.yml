@@ -1,0 +1,13 @@
+info:
+  name: MEMBROS DA ORGANIZACAO
+  type: folder
+  seq: 6
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+docs:
+  content: Vínculo de usuários com organizações (`/organizations/:orgId/users`). Todas as rotas exigem `ADMIN` (`{{tokenAdmin}}`). Usa `{{organizationId}}` e `{{userId}}`.
+  type: text/markdown

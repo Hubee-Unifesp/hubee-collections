@@ -1,0 +1,42 @@
+info:
+  name: GET BUSCA SEM RESULTADOS
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/events?search=evento-que-nao-existe-xyz"
+  params:
+    - name: search
+      value: evento-que-nao-existe-xyz
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista vazia", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().data).to.have.length(0);
+          expect(res.getBody().meta.total).to.equal(0);
+          expect(res.getBody().meta.totalPages).to.equal(0);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /events
+
+  Busca sem resultado responde 200 com lista vazia e totais zerados.
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `200` página vazia

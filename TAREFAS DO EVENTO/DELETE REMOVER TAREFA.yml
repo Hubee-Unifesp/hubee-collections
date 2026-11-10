@@ -1,0 +1,45 @@
+info:
+  name: DELETE REMOVER TAREFA
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/events/:eventId/tasks/:id"
+  params:
+    - name: eventId
+      value: "{{eventId}}"
+      type: path
+    - name: id
+      value: "{{taskId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /events/:eventId/tasks/:id
+
+  Remove a tarefa.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `204` removida
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

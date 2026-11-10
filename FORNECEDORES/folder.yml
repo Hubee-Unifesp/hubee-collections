@@ -1,0 +1,16 @@
+info:
+  name: FORNECEDORES
+  type: folder
+  seq: 14
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenOrganizador}}"
+
+docs:
+  content: |-
+    CRUD e busca de fornecedores em `/suppliers` (GOL-202), com o token do
+    organizador (`{{tokenOrganizador}}`). O POST CRIAR FORNECEDOR salva o id em
+    `{{supplierId}}`, usado também em DESPESAS DO EVENTO.
+  type: text/markdown

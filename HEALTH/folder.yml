@@ -1,0 +1,8 @@
+info:
+  name: HEALTH
+  type: folder
+  seq: 1
+
+docs:
+  content: Disponibilidade da API e do banco. Público.
+  type: text/markdown

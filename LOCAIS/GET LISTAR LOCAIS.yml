@@ -1,0 +1,45 @@
+info:
+  name: GET LISTAR LOCAIS
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/venues"
+  params:
+    - name: city
+      value: São Paulo
+      type: query
+      disabled: true
+    - name: state
+      value: SP
+      type: query
+      disabled: true
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a lista de locais", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /venues
+
+  Lista locais, com filtros opcionais por cidade e UF.
+
+  **Acesso:** público (sem token)
+
+  **Respostas**
+
+  - `200` array de locais
+  - `400` body ou parâmetros inválidos (mensagens em `message[]`)

@@ -1,0 +1,42 @@
+info:
+  name: DELETE CANCELAR PEDIDO
+  type: http
+  seq: 8
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/orders/:id"
+  params:
+    - name: id
+      value: "{{orderToCancelId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /orders/:id
+
+  Cancela o pedido (status `cancelado`) e libera o saldo do lote. Pedido pago não pode ser cancelado.
+
+  **Acesso:** autenticado (qualquer usuário logado); dono do pedido ou `ADMIN`
+
+  **Respostas**
+
+  - `204` cancelado
+  - `401` token ausente ou inválido
+  - `404` recurso não encontrado
+  - `422` pedido já pago ou já cancelado

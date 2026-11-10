@@ -1,11 +1,16 @@
 info:
   name: GET MEUS PEDIDOS
   type: http
-  seq: 5
+  seq: 6
 
 http:
   method: GET
   url: "{{baseUrl}}/users/me/orders"
+  params:
+    - name: status
+      value: pendente
+      type: query
+      disabled: true
   auth: inherit
 
 runtime:
@@ -27,4 +32,13 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # GET /users/me/orders
+
   Lista os pedidos do comprador logado. Aceita o filtro opcional ?status=pendente.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `200` array de pedidos do usuário
+  - `401` token ausente ou inválido

@@ -1,0 +1,45 @@
+info:
+  name: DELETE REMOVER MEMBRO
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/organizations/:orgId/users/:userId"
+  params:
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+    - name: userId
+      value: "{{userId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /organizations/:orgId/users/:userId
+
+  Desvincula o usuário da organização.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `204` removido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

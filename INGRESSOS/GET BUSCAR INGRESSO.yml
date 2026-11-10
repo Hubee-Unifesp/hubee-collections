@@ -1,0 +1,43 @@
+info:
+  name: GET BUSCAR INGRESSO
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/tickets/:id"
+  params:
+    - name: id
+      value: "{{ticketId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o ingresso", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("ticketId"));
+          expect(res.getBody().qrCode).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /tickets/:id
+
+  Consulta o ingresso salvo em {{ticketId}}. Ingresso de outra pessoa responde 404.
+
+  **Acesso:** autenticado (qualquer usuário logado); comprador, titular ou `ADMIN`
+
+  **Respostas**
+
+  - `200` ingresso com `qrCode`
+  - `401` token ausente ou inválido
+  - `404` recurso não encontrado

@@ -6,7 +6,6 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/tickets"
-  auth: none
 
 runtime:
   scripts:
@@ -24,4 +23,12 @@ settings:
   forwardAuthorizationHeader: true
 
 docs: |-
+  # GET /tickets
+
   A listagem de ingressos exige login.
+
+  **Acesso:** sem token (cenário de erro)
+
+  **Respostas**
+
+  - `401` token ausente ou inválido

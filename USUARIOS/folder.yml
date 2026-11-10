@@ -1,7 +1,16 @@
 info:
   name: USUARIOS
   type: folder
-  seq: 2
+  seq: 3
 
 request:
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+docs:
+  content: |-
+    CRUD administrativo de usuários em `/users`. Todas as rotas exigem `ADMIN`
+    (`{{tokenAdmin}}`, de AUTH/POST LOGIN ADMIN). As rotas do próprio usuário
+    (`/users/me`) ficam na pasta MINHA CONTA.
+  type: text/markdown

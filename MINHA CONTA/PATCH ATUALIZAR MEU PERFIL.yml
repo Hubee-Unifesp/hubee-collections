@@ -1,0 +1,40 @@
+info:
+  name: PATCH ATUALIZAR MEU PERFIL
+  type: http
+  seq: 2
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/users/me"
+  body:
+    type: json
+    data: |-
+      {
+        "fullName": "Maria Souza Lima",
+        "phone": "11999998888",
+        "birthDate": "1998-07-15"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # PATCH /users/me
+
+  Atualiza os dados do próprio perfil. Envie só os campos que mudam.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  Campos aceitos: `fullName`, `email`, `phone`, `cpf`, `birthDate`. O CPF só pode ser informado uma vez (depois não muda). A senha muda em PATCH ALTERAR MINHA SENHA.
+
+  **Respostas**
+
+  - `200` perfil atualizado
+  - `400` body inválido ou tentativa de trocar o CPF
+  - `401` token ausente ou inválido
+  - `409` e-mail ou CPF já em uso

@@ -1,0 +1,49 @@
+info:
+  name: DELETE REMOVER ORGANIZACAO
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/organizations/:id"
+  params:
+    - name: id
+      value: "{{organizationId}}"
+      type: path
+  auth:
+    type: bearer
+    token: "{{tokenAdmin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 204 No Content", function () {
+          expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # DELETE /organizations/:id
+
+  Remove a organização {{organizationId}} em DELETE /organizations/:id.
+  Rota protegida por @AdminOnly() (restrita a administradores globais da plataforma
+  com role = 'ADMIN'; retorna 204 No Content em caso de sucesso, 403 Forbidden
+  para usuários comuns e 404 Not Found se a organização não existir).
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  Remove também os vínculos com membros e eventos. Rode por último: as pastas seguintes usam `{{organizationId}}`.
+
+  **Respostas**
+
+  - `204` removida
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
+  - `404` recurso não encontrado

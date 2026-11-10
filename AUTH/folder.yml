@@ -1,0 +1,12 @@
+info:
+  name: AUTH
+  type: folder
+  seq: 2
+
+docs:
+  content: |-
+    Cadastro, login e usuário do token. Rode primeiro os três logins: cada um salva
+    o JWT numa variável secreta do ambiente (`tokenAdmin`, `tokenOrganizador`,
+    `tokenComprador`), herdada pelas pastas conforme o perfil que as rotas exigem.
+    Preencha antes os e-mails e senhas (variáveis secretas) no ambiente.
+  type: text/markdown

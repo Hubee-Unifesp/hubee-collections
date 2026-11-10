@@ -1,0 +1,33 @@
+info:
+  name: GET LISTAR MEMBROS
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organizations/:orgId/users"
+  params:
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # GET /organizations/:orgId/users
+
+  Lista os membros da organização.
+
+  **Acesso:** somente `ADMIN` da plataforma
+
+  **Respostas**
+
+  - `200` array de membros
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão

@@ -1,0 +1,43 @@
+info:
+  name: GET BUSCAR PEDIDO
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/orders/:id"
+  params:
+    - name: id
+      value: "{{orderId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o pedido e seus itens", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody().id).to.equal(bru.getEnvVar("orderId"));
+          expect(res.getBody().items).to.be.an("array").that.is.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /orders/:id
+
+  Consulta o pedido salvo em {{orderId}}. Pedido de outra pessoa responde 404.
+
+  **Acesso:** autenticado (qualquer usuário logado); dono do pedido ou `ADMIN`
+
+  **Respostas**
+
+  - `200` pedido com itens
+  - `401` token ausente ou inválido
+  - `404` pedido inexistente ou de outra pessoa

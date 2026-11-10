@@ -1,0 +1,28 @@
+info:
+  name: DELETE EXCLUIR MINHA CONTA
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/users/me"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+docs: |-
+  # DELETE /users/me
+
+  Remove (soft delete) a conta do usuário logado. **Cuidado:** rodar com `{{tokenComprador}}` apaga o comprador de teste; troque o token na aba Auth se quiser usar outro usuário.
+
+  **Acesso:** autenticado (qualquer usuário logado)
+
+  **Respostas**
+
+  - `204` conta removida
+  - `401` token ausente ou inválido
