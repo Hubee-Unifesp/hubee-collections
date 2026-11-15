@@ -1,0 +1,59 @@
+info:
+  name: POST AVALIAR FORNECEDOR
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/suppliers/:id/reviews"
+  params:
+    - name: id
+      value: "{{supplierId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "rating": 5,
+        "comment": "Buffet pontual e muito bem servido."
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 201 (primeira avaliação) ou 200 (atualização) com a avaliação salva", function () {
+          expect([200, 201]).to.include(res.getStatus());
+          expect(res.getBody().supplierId).to.equal(bru.getEnvVar("supplierId"));
+          expect(res.getBody().rating).to.equal(5);
+          expect(res.getBody().comment).to.equal("Buffet pontual e muito bem servido.");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /suppliers/:id/reviews
+
+  Registra ou atualiza a avaliação do organizador autenticado para o fornecedor
+  {{supplierId}} (upsert por `supplier_id` e `user_id`, GOL-245).
+
+  **Acesso:** organizador (vínculo aceito em alguma organização) ou `ADMIN`
+
+  **Campos**
+  - `rating` (inteiro de 1 a 5) — obrigatório
+  - `comment` (string, até 500 caracteres) — opcional
+
+  **Respostas**
+
+  - `201` primeira avaliação do organizador para o fornecedor criada
+  - `200` avaliação anterior do mesmo organizador atualizada
+  - `400` nota fora do intervalo 1 a 5, comentário inválido ou `id` não é UUID
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão (comprador comum ou convite pendente/recusado)
+  - `404` fornecedor não encontrado ou removido logicamente

@@ -1,0 +1,45 @@
+info:
+  name: GET LISTAR AVALIACOES DO FORNECEDOR
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/suppliers/:id/reviews"
+  params:
+    - name: id
+      value: "{{supplierId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista de avaliações do fornecedor", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /suppliers/:id/reviews
+
+  Lista as avaliações do fornecedor {{supplierId}} ordenadas da mais recente
+  para a mais antiga (`updatedAt DESC, id DESC`, GOL-245).
+
+  **Acesso:** organizador (vínculo aceito em alguma organização) ou `ADMIN`
+
+  **Respostas**
+
+  - `200` array de avaliações (`SupplierReviewResponseDto[]`)
+  - `400` `id` não é um UUID válido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão (comprador comum ou convite pendente/recusado)
+  - `404` fornecedor não encontrado ou removido logicamente

@@ -10,7 +10,8 @@ request:
 
 docs:
   content: |-
-    CRUD e busca de fornecedores em `/suppliers` (GOL-202), com o token do
-    organizador (`{{tokenOrganizador}}`). O POST CRIAR FORNECEDOR salva o id em
-    `{{supplierId}}`, usado também em DESPESAS DO EVENTO.
+    CRUD, busca e avaliações de fornecedores em `/suppliers` (GOL-202 e GOL-245),
+    com o token do organizador (`{{tokenOrganizador}}`). O POST CRIAR FORNECEDOR
+    salva o id em `{{supplierId}}`, usado também em DESPESAS DO EVENTO e nas
+    avaliações.
   type: text/markdown
