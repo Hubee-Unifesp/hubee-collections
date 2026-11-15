@@ -1,7 +1,7 @@
 info:
   name: DELETE REMOVER FORNECEDOR
   type: http
-  seq: 5
+  seq: 7
 
 http:
   method: DELETE
