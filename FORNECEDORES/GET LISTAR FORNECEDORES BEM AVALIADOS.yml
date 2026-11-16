@@ -1,0 +1,71 @@
+info:
+  name: GET LISTAR FORNECEDORES BEM AVALIADOS
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{baseUrl}}/suppliers?sortBy=rating&minRating=4"
+  params:
+    - name: sortBy
+      value: rating
+      type: query
+    - name: minRating
+      value: "4"
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista de fornecedores", function () {
+          expect(res.getStatus()).to.equal(200);
+          expect(res.getBody()).to.be.an("array");
+        });
+
+        test("todos os fornecedores têm ratingAverage >= 4 e ratingCount", function () {
+          res.getBody().forEach(function (supplier) {
+            expect(supplier.ratingAverage).to.be.at.least(4);
+            expect(supplier.ratingCount).to.be.a("number");
+          });
+        });
+
+        test("ordena da maior média para a menor", function () {
+          const averages = res.getBody().map(function (supplier) {
+            return supplier.ratingAverage;
+          });
+          for (let i = 1; i < averages.length; i++) {
+            expect(averages[i]).to.be.at.most(averages[i - 1]);
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /suppliers?sortBy=rating&minRating=4
+
+  Lista os fornecedores bem avaliados: apenas os que têm média de avaliação
+  maior ou igual a `minRating` (1 a 5), ordenados por `sortBy=rating`
+  (GOL-250 e GOL-251).
+
+  - `minRating` compara com a média arredondada em 1 casa decimal
+    (`ratingAverage`). Fornecedores sem avaliações ficam de fora.
+  - `sortBy=rating` ordena por `ratingAverage` decrescente e desempata por
+    `ratingCount` decrescente e `companyName` crescente.
+  - Cada fornecedor retorna `ratingAverage` (`number | null`) e `ratingCount`.
+  - Pode ser combinado com `search` e `category`.
+
+  **Acesso:** organizador (vínculo aceito em alguma organização) ou `ADMIN`
+
+  **Respostas**
+
+  - `200` array de fornecedores (`SupplierResponseDto[]`)
+  - `400` `minRating` fora de 1 a 5 ou não numérico, ou `sortBy` inválido
+  - `401` token ausente ou inválido
+  - `403` perfil sem permissão
