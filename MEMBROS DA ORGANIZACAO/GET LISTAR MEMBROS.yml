@@ -12,22 +12,48 @@ http:
       type: path
   auth: inherit
 
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com lista de membros contendo userName e userEmail", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body).to.be.an("array").that.is.not.empty;
+          body.forEach(function (member) {
+            expect(member).to.include.all.keys(
+              "orgId",
+              "userId",
+              "userName",
+              "userEmail",
+              "role",
+              "permission",
+              "inviteStatus"
+            );
+            expect(member.userName).to.be.a("string");
+            expect(member.userEmail).to.be.a("string");
+          });
+        });
+
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
 
 docs: |-
   # GET /organizations/:orgId/users
 
-  Lista os membros da organização.
+  Lista os membros e convites vinculados à organização `{{organizationId}}`,
+  incluindo `userName` e `userEmail` de cada usuário (`OrganizationUserResponseDto[]`).
 
-  **Acesso:** somente `ADMIN` da plataforma
+  **Acesso:** `@OrgAccess('manage', { from: 'org', param: 'orgId' })` — administrador da organização (nível `manage`) ou `ADMIN` global.
 
   **Respostas**
 
-  - `200` array de membros
+  - `200` array de vínculos (`OrganizationUserResponseDto[]`)
+  - `400` `orgId` inválido (não UUID)
   - `401` token ausente ou inválido
-  - `403` perfil sem permissão
+  - `403` membro da organização com nível `read` ou `write` (sem `manage`)
+  - `404` organização inexistente ou usuário autenticado não é membro aceito da organização

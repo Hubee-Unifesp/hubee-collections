@@ -1,7 +1,7 @@
 info:
   name: DELETE REMOVER MEMBRO
   type: http
-  seq: 4
+  seq: 6
 
 http:
   method: DELETE
@@ -28,18 +28,19 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
 
 docs: |-
   # DELETE /organizations/:orgId/users/:userId
 
-  Desvincula o usuário da organização.
+  Desvincula o usuário `{{userId}}` da organização `{{organizationId}}`.
 
-  **Acesso:** somente `ADMIN` da plataforma
+  **Acesso:** `@OrgAccess('manage', { from: 'org', param: 'orgId' })` — administrador da organização (nível `manage`) ou `ADMIN` global.
 
   **Respostas**
 
-  - `204` removido
+  - `204` vínculo removido com sucesso (sem corpo de resposta)
+  - `400` `orgId` ou `userId` não é um UUID válido
   - `401` token ausente ou inválido
-  - `403` perfil sem permissão
-  - `404` recurso não encontrado
+  - `403` membro da organização com nível `read` ou `write` (sem `manage`)
+  - `404` organização/vínculo não encontrado ou usuário solicitante sem vínculo aceito na organização

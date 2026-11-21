@@ -6,8 +6,15 @@ info:
 request:
   auth:
     type: bearer
-    token: "{{tokenAdmin}}"
+    token: "{{tokenOrganizador}}"
 
 docs:
-  content: Vínculo de usuários com organizações (`/organizations/:orgId/users`). Todas as rotas exigem `ADMIN` (`{{tokenAdmin}}`). Usa `{{organizationId}}` e `{{userId}}`.
+  content: |-
+    Gerenciamento de membros e convites da organização (GOL-275).
+    As rotas de gestão (`/organizations/:orgId/users` e `/organizations/:orgId/users/:userId`)
+    são protegidas por `@OrgAccess('manage', { from: 'org', param: 'orgId' })` e herdam
+    `{{tokenOrganizador}}` (ou `ADMIN` global).
+    As rotas do usuário convidado (`GET /users/me/invites` e `PATCH /organizations/:orgId/users/me`)
+    são protegidas por `@Authenticated()` e utilizam `{{tokenComprador}}`.
+    Usa `{{organizationId}}`, `{{emailComprador}}` e `{{userId}}`.
   type: text/markdown

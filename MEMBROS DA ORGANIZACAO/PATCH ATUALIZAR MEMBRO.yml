@@ -1,7 +1,7 @@
 info:
   name: PATCH ATUALIZAR MEMBRO
   type: http
-  seq: 3
+  seq: 5
 
 http:
   method: PATCH
@@ -22,30 +22,42 @@ http:
       }
   auth: inherit
 
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com papel e permissão atualizados", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body.role).to.equal("admin");
+          expect(body.permission).to.equal("full");
+          expect(body.userName).to.be.a("string");
+          expect(body.userEmail).to.be.a("string");
+        });
+
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
 
 docs: |-
   # PATCH /organizations/:orgId/users/:userId
 
-  Muda papel, permissão ou status do convite.
+  Atualiza papel, permissão ou status de convite de um membro da organização `{{organizationId}}`.
 
-  **Acesso:** somente `ADMIN` da plataforma
+  **Acesso:** `@OrgAccess('manage', { from: 'org', param: 'orgId' })` — administrador da organização (nível `manage`) ou `ADMIN` global.
 
-  **Campos**
-  - `userId` (UUID) — obrigatório no POST (só no body)
-  - `role`: `admin` | `member`
-  - `permission`: `full` | `read_only`
-  - `inviteStatus`: `pending` | `accepted` | `rejected` (padrão `pending`)
+  **Campos (`UpdateOrganizationUserDto` — ao menos um obrigatório)**
+  - `role`: `admin` | `member` — opcional
+  - `permission`: `full` | `read_only` — opcional
+  - `inviteStatus`: `pending` | `accepted` | `rejected` — opcional
 
   **Respostas**
 
-  - `200` vínculo atualizado
-  - `400` body vazio ou inválido
+  - `200` vínculo atualizado (`OrganizationUserResponseDto`, com `userName` e `userEmail`)
+  - `400` body vazio, campos inválidos ou UUID inválido
   - `401` token ausente ou inválido
-  - `403` perfil sem permissão
-  - `404` recurso não encontrado
+  - `403` membro da organização com nível `read` ou `write` (sem `manage`)
+  - `404` organização/vínculo não encontrado ou usuário solicitante sem vínculo aceito na organização

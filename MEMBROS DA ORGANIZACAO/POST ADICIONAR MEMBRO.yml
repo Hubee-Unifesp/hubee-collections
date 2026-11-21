@@ -14,19 +14,31 @@ http:
     type: json
     data: |-
       {
-        "userId": "{{userId}}",
+        "email": "{{emailComprador}}",
         "role": "member",
-        "permission": "read_only",
-        "inviteStatus": "accepted"
+        "permission": "read_only"
       }
   auth: inherit
 
 runtime:
   scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("userId", res.getBody().userId);
+        }
     - type: tests
       code: |-
-        test("responde 201 com o vínculo criado", function () {
+        test("responde 201 com o convite pendente criado", function () {
           expect(res.getStatus()).to.equal(201);
+          const body = res.getBody();
+          expect(body.orgId).to.equal(bru.getEnvVar("organizationId"));
+          expect(body.userId).to.be.a("string");
+          expect(body.userName).to.be.a("string");
+          expect(body.userEmail).to.be.a("string");
+          expect(body.role).to.equal("member");
+          expect(body.permission).to.equal("read_only");
+          expect(body.inviteStatus).to.equal("pending");
         });
 
 settings:
@@ -34,26 +46,27 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-  forwardAuthorizationHeader: false
+  forwardAuthorizationHeader: true
 
 docs: |-
   # POST /organizations/:orgId/users
 
-  Vincula o usuário `{{userId}}` à organização.
+  Convida um usuário ativo para a organização `{{organizationId}}` informando o
+  e-mail (`CreateOrganizationUserDto`). O vínculo é criado sempre com
+  `inviteStatus = "pending"` e o `userId` retornado é salvo em `{{userId}}`.
 
-  **Acesso:** somente `ADMIN` da plataforma
+  **Acesso:** `@OrgAccess('manage', { from: 'org', param: 'orgId' })` — administrador da organização (nível `manage`) ou `ADMIN` global.
 
-  **Campos**
-  - `userId` (UUID) — obrigatório no POST (só no body)
-  - `role`: `admin` | `member`
-  - `permission`: `full` | `read_only`
-  - `inviteStatus`: `pending` | `accepted` | `rejected` (padrão `pending`)
+  **Campos (`CreateOrganizationUserDto`)**
+  - `email` (string, e-mail de usuário ativo) — obrigatório
+  - `role`: `admin` | `member` — obrigatório
+  - `permission`: `full` | `read_only` — obrigatório
 
   **Respostas**
 
-  - `201` vínculo criado
-  - `400` body ou parâmetros inválidos (mensagens em `message[]`)
+  - `201` convite criado (`OrganizationUserResponseDto`, com `userName`, `userEmail` e `inviteStatus: "pending"`)
+  - `400` body ou parâmetros inválidos (e-mail inválido ou `orgId` não UUID)
   - `401` token ausente ou inválido
-  - `403` perfil sem permissão
-  - `404` recurso não encontrado
-  - `409` usuário já é membro
+  - `403` membro da organização com nível `read` ou `write` (sem `manage`)
+  - `404` organização inexistente, usuário solicitante sem vínculo aceito na organização, ou e-mail não pertence a nenhum usuário ativo
+  - `409` usuário já vinculado a esta organização
