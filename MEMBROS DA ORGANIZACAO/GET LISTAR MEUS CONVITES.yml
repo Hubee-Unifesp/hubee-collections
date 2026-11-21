@@ -1,0 +1,53 @@
+info:
+  name: GET LISTAR MEUS CONVITES
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/users/me/invites"
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a lista de convites pendentes do usuário autenticado", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body).to.be.an("array");
+          body.forEach(function (invite) {
+            expect(invite).to.include.all.keys(
+              "orgId",
+              "organizationName",
+              "userId",
+              "role",
+              "permission",
+              "inviteStatus"
+            );
+            expect(invite.organizationName).to.be.a("string");
+            expect(invite.inviteStatus).to.equal("pending");
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /users/me/invites
+
+  Lista os convites pendentes (`inviteStatus = "pending"`) de organizações
+  destinados ao usuário autenticado, incluindo `organizationName` (`UserInviteResponseDto[]`).
+
+  **Acesso:** `@Authenticated()` (qualquer usuário logado — usa `{{tokenComprador}}`).
+
+  **Respostas**
+
+  - `200` array de convites pendentes (`UserInviteResponseDto[]`)
+  - `401` token ausente ou inválido

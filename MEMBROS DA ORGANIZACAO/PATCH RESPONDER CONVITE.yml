@@ -1,0 +1,59 @@
+info:
+  name: PATCH RESPONDER CONVITE
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/organizations/:orgId/users/me"
+  params:
+    - name: orgId
+      value: "{{organizationId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "inviteStatus": "accepted"
+      }
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com o convite aceito e vínculo atualizado", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body.orgId).to.equal(bru.getEnvVar("organizationId"));
+          expect(body.inviteStatus).to.equal("accepted");
+          expect(body.userName).to.be.a("string");
+          expect(body.userEmail).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # PATCH /organizations/:orgId/users/me
+
+  Permite que o usuário autenticado aceite ou recuse o seu convite pendente para a
+  organização `{{organizationId}}` (`RespondOrganizationInviteDto`).
+
+  **Acesso:** `@Authenticated()` (o próprio usuário convidado — usa `{{tokenComprador}}`).
+
+  **Campos (`RespondOrganizationInviteDto`)**
+  - `inviteStatus`: `accepted` | `rejected` — obrigatório
+
+  **Respostas**
+
+  - `200` vínculo atualizado (`OrganizationUserResponseDto`, com `userName` e `userEmail`)
+  - `400` `inviteStatus` inválido (fora de `accepted` | `rejected`) ou `orgId` não UUID
+  - `401` token ausente ou inválido
+  - `404` convite pendente não encontrado para este usuário nesta organização
