@@ -29,7 +29,7 @@ hubee-collections/
 ├── ORGANIZACOES/                # CRUD de /organizations e validação RBAC
 ├── MEMBROS DA ORGANIZACAO/      # /organizations/:orgId/users
 ├── LOCAIS/                      # CRUD de /venues
-├── EVENTOS/                     # CRUD de /events, capa e resumo
+├── EVENTOS/                     # CRUD de /events, capa, resumo e rascunho com IA
 │   └── CENARIOS DE BUSCA/       # testes da busca pública de eventos
 ├── ORGANIZACOES DO EVENTO/      # /events/:eventId/organizations
 ├── LOTES DE INGRESSO/           # /events/:eventId/ticket-types
