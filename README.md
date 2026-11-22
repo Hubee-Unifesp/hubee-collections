@@ -30,7 +30,7 @@ As pastas seguem a ordem do fluxo da API e, dentro de cada uma, a ordem **criar 
 | 5 | `ORGANIZACOES` | `/organizations` | organizador | `organizationId` |
 | 6 | `MEMBROS DA ORGANIZACAO` | `/organizations/:orgId/users` | admin | — |
 | 7 | `LOCAIS` | `/venues` | organizador | `venueId` |
-| 8 | `EVENTOS` (+ `CENARIOS DE BUSCA`) | `/events` | organizador | `eventId` |
+| 8 | `EVENTOS` (+ `CENARIOS DE BUSCA`) | `/events`, `/events/ai-draft` | organizador | `eventId` |
 | 9 | `ORGANIZACOES DO EVENTO` | `/events/:eventId/organizations` | admin | — |
 | 10 | `LOTES DE INGRESSO` | `/events/:eventId/ticket-types` | organizador | `ticketTypeId` |
 | 11 | `PEDIDOS` | `/orders`, `/users/me/orders` | comprador | `orderId`, `orderToCancelId` |
