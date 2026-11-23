@@ -34,6 +34,8 @@ variables:
     value: ""
   - name: taskId
     value: ""
+  - name: notificationId
+    value: ""
   - secret: true
     name: emailAdmin
   - secret: true

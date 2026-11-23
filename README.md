@@ -39,6 +39,7 @@ As pastas seguem a ordem do fluxo da API e, dentro de cada uma, a ordem **criar 
 | 14 | `FORNECEDORES` | `/suppliers` | organizador | `supplierId` |
 | 15 | `DESPESAS DO EVENTO` | `/events/:eventId/expenses` | admin | `expenseId` |
 | 16 | `TAREFAS DO EVENTO` | `/events/:eventId/tasks` | admin | `taskId` |
+| 17 | `NOTIFICACOES` | `/notifications` | comprador | `notificationId` |
 
 Requisições que exigem outro perfil trocam o token na própria aba **Auth** (por exemplo, `DELETE REMOVER ORGANIZACAO` usa `tokenAdmin`, e `POST CRIAR EVENTO SEM PERMISSAO` usa `tokenComprador`). Os cenários de erro esperados (`... SEM PERMISSAO`, `... SEM TOKEN`, `... LOTE ESGOTADO`, `... SEM ITENS`) têm testes que conferem o status de erro.
 
@@ -52,6 +53,7 @@ Requisições que exigem outro perfil trocam o token na própria aba **Auth** (p
 6. `PEDIDOS` › `POST CRIAR PEDIDO`
 7. `PAGAMENTOS` › `POST PAGAR PEDIDO` (confirma o pagamento e emite os ingressos)
 8. `INGRESSOS` › `GET MEUS INGRESSOS`
+9. `NOTIFICACOES` › `GET LISTAR NOTIFICACOES` → `PATCH MARCAR NOTIFICACAO COMO LIDA` → `PATCH MARCAR TODAS COMO LIDAS`
 
 As requisições de remoção e cancelamento (`DELETE ...`) apagam registros que as pastas seguintes usam. Ao rodar a coleção inteira, deixe-as para o fim ou rode cada pasta isoladamente. Onde o fluxo precisa remover algo sem quebrar o resto, há um registro descartável: `POST CRIAR USUARIO PARA REMOVER` e `POST CRIAR PEDIDO PARA CANCELAR`.
 

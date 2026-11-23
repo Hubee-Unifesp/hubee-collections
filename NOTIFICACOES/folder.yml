@@ -1,0 +1,19 @@
+info:
+  name: NOTIFICACOES
+  type: folder
+  seq: 17
+
+request:
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+docs:
+  content: |-
+    Notificações in-app (GOL-268 / GOL-269). Todas as rotas exigem usuário autenticado
+    (`@Authenticated()`), herdando `{{tokenComprador}}` por padrão (troque para
+    `{{tokenOrganizador}}` para consultar os avisos de nova venda e lote esgotado).
+    As notificações são geradas automaticamente no checkout (`POST /payments`), no
+    cancelamento/estorno de pedidos e no cancelamento de eventos. Salva a primeira
+    notificação listada em `{{notificationId}}`.
+  type: text/markdown

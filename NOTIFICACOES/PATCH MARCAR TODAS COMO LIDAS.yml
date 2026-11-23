@@ -1,0 +1,39 @@
+info:
+  name: PATCH MARCAR TODAS COMO LIDAS
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/notifications/read-all"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a contagem updatedCount", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body).to.have.property("updatedCount");
+          expect(body.updatedCount).to.be.a("number").and.to.be.at.least(0);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # PATCH /notifications/read-all
+
+  Marca todas as notificações ainda não lidas (`readAt = null`) do usuário autenticado como lidas e retorna a quantidade de registros atualizados.
+
+  **Acesso:** autenticado (`@Authenticated()`, qualquer usuário logado)
+
+  **Respostas**
+
+  - `200` objeto `ReadAllNotificationsResponseDto` (`{ updatedCount: number }`)
+  - `401` token ausente ou inválido

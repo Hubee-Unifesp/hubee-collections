@@ -1,0 +1,48 @@
+info:
+  name: PATCH MARCAR NOTIFICACAO COMO LIDA
+  type: http
+  seq: 2
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/notifications/:id/read"
+  params:
+    - name: id
+      value: "{{notificationId}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 200 com a notificação marcada como lida", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body.id).to.equal(bru.getEnvVar("notificationId"));
+          expect(body.readAt).to.be.a("string").and.not.be.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # PATCH /notifications/:id/read
+
+  Marca a notificação `{{notificationId}}` do usuário autenticado como lida, preenchendo `readAt` com o timestamp atual (operação idempotente caso já tenha sido lida).
+
+  **Acesso:** autenticado (`@Authenticated()`, somente o próprio destinatário da notificação)
+
+  **Parâmetros de rota**
+  - `id` (UUID) — ID da notificação (`{{notificationId}}`)
+
+  **Respostas**
+
+  - `200` notificação atualizada (`NotificationResponseDto` com `readAt` preenchido)
+  - `400` parâmetro `id` não é um UUID válido
+  - `401` token ausente ou inválido
+  - `404` notificação não encontrada ou pertence a outro usuário

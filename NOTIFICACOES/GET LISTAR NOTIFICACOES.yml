@@ -1,0 +1,86 @@
+info:
+  name: GET LISTAR NOTIFICACOES
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/notifications"
+  params:
+    - name: unreadOnly
+      value: "true"
+      type: query
+      disabled: true
+    - name: limit
+      value: "20"
+      type: query
+      disabled: true
+    - name: offset
+      value: "0"
+      type: query
+      disabled: true
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 200 && Array.isArray(res.getBody().data) && res.getBody().data.length > 0) {
+          bru.setEnvVar("notificationId", res.getBody().data[0].id);
+        }
+    - type: tests
+      code: |-
+        test("responde 200 com data e unreadCount", function () {
+          expect(res.getStatus()).to.equal(200);
+          const body = res.getBody();
+          expect(body).to.include.all.keys("data", "unreadCount");
+          expect(body.data).to.be.an("array");
+          expect(body.unreadCount).to.be.a("number").and.to.be.at.least(0);
+        });
+
+        test("cada notificação segue o contrato NotificationResponseDto", function () {
+          const validTypes = [
+            "payment_confirmed",
+            "order_cancelled",
+            "order_refunded",
+            "event_cancelled",
+            "new_sale",
+            "batch_sold_out"
+          ];
+          res.getBody().data.forEach(function (item) {
+            expect(item).to.include.all.keys(
+              "id",
+              "userId",
+              "type",
+              "title",
+              "message",
+              "createdAt"
+            );
+            expect(validTypes).to.include(item.type);
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # GET /notifications
+
+  Lista as notificações in-app do usuário autenticado ordenadas de forma decrescente por `createdAt` e retorna o total de notificações não lidas (`unreadCount`). Salva o ID da primeira notificação em `{{notificationId}}`.
+
+  **Acesso:** autenticado (`@Authenticated()`, qualquer usuário logado)
+
+  **Query (todas opcionais)**
+  - `unreadOnly` (`true` | `false`) — quando `true`, retorna em `data` apenas notificações com `readAt = null`
+  - `limit` (inteiro, `1` a `100`, padrão `20`) — quantidade máxima de itens retornados
+  - `offset` (inteiro, `>= 0`, padrão `0`) — deslocamento para paginação
+
+  **Respostas**
+
+  - `200` objeto `NotificationListResponseDto` (`{ data: NotificationResponseDto[], unreadCount: number }`)
+  - `400` parâmetros de query inválidos (mensagens em `message[]`)
+  - `401` token ausente ou inválido
