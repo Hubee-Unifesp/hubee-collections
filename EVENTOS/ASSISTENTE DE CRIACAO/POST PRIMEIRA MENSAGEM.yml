@@ -1,0 +1,86 @@
+info:
+  name: POST PRIMEIRA MENSAGEM
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/events/ai-assistant/turn"
+  body:
+    type: json
+    data: |-
+      {
+        "answer": "Calourada da Engenharia, 3ª edição, no dia 5 de dezembro de 2030 às 21h no Ginásio da Unifesp, Rua Talim 330, São José dos Campos - SP. 1º lote a R$ 30 com 200 ingressos."
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const FIELDS = ["name", "start", "end", "venue", "ticketTypes", "salesStart", "category", "ageRating", "description"];
+        const body = res.getBody();
+
+        test("devolve rascunho, reply, question, missingRequired e done", function () {
+          expect(body).to.have.all.keys("draft", "reply", "question", "missingRequired", "done");
+          expect(body.draft).to.include.all.keys("startDate", "startTime", "endDate", "endTime", "venue", "ticketTypes", "skipped");
+        });
+
+        test("done só é true sem pergunta e sem obrigatório faltando", function () {
+          expect(body.done).to.equal(body.question === null);
+          if (body.done) expect(body.missingRequired).to.be.empty;
+        });
+
+        test("a pergunta é de um campo conhecido", function () {
+          if (body.question !== null) {
+            expect(FIELDS).to.include(body.question.field);
+            expect(body.question.text).to.be.a("string").that.is.not.empty;
+            expect(body.question.skippable).to.be.a("boolean");
+          }
+        });
+
+        test("responde 200", function () {
+          expect(res.getStatus(), body && body.message).to.equal(200);
+        });
+
+        test("extrai nome, início e local da descrição", function () {
+          expect(body.draft.name).to.be.a("string").that.is.not.empty;
+          expect(body.draft.startDate).to.equal("2030-12-05");
+          expect(body.draft.startTime).to.equal("21:00");
+          expect(body.draft.venue.city).to.equal("São José dos Campos");
+        });
+
+        test("o próximo campo faltando é o término", function () {
+          expect(body.question.field).to.equal("end");
+          expect(body.missingRequired).to.deep.equal(["end"]);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /events/ai-assistant/turn
+
+  Primeira rodada: só `answer`, com a descrição do evento. A IA preenche o que estiver no texto e o assistente pergunta o próximo campo que falta, pela ordem fixa nome → início → término → local → lotes → início das vendas → categoria → classificação → descrição.
+
+  **Corpo**
+  - `draft` — rascunho devolvido na rodada anterior (ausente na primeira mensagem)
+  - `field` — campo da pergunta respondida: `name` | `start` | `end` | `venue` | `ticketTypes` | `salesStart` | `category` | `ageRating` | `description`
+  - `answer` — texto livre, até 2000 caracteres (obrigatório quando `skip` não é `true`)
+  - `skip` — `true` pula a pergunta de um campo opcional, sem chamar a IA
+
+  **Resposta `200`**
+  - `draft` — rascunho atualizado, com dia e horário separados (`startDate` `AAAA-MM-DD` + `startTime` `HH:mm`) e `skipped`
+  - `reply` — confirmação curta da IA (`null` quando não houve chamada)
+  - `question` — próxima pergunta `{ field, text, skippable }` ou `null`
+  - `missingRequired` — obrigatórios ainda incompletos (nome, início, término, local)
+  - `done` — `true` só quando não há mais pergunta
+
+  **Erros:** `400` corpo inválido · `401` sem token · `403` sem organização · `429` limite de IA (`Retry-After`) · `503` IA indisponível ou sem `ANTHROPIC_API_KEY`.
+
+  Em `production` a requisição não altera dados, mas as que chamam a IA consomem
+  tokens pagos e a cota do organizador.

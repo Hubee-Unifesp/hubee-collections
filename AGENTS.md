@@ -29,8 +29,9 @@ hubee-collections/
 ├── ORGANIZACOES/                # CRUD de /organizations e validação RBAC
 ├── MEMBROS DA ORGANIZACAO/      # /organizations/:orgId/users
 ├── LOCAIS/                      # CRUD de /venues
-├── EVENTOS/                     # CRUD de /events, capa, resumo e rascunho com IA
-│   └── CENARIOS DE BUSCA/       # testes da busca pública de eventos
+├── EVENTOS/                     # CRUD de /events, capa e resumo
+│   ├── CENARIOS DE BUSCA/       # testes da busca pública de eventos
+│   └── ASSISTENTE DE CRIACAO/   # rodadas do assistente com IA (/events/ai-assistant/turn)
 ├── ORGANIZACOES DO EVENTO/      # /events/:eventId/organizations
 ├── LOTES DE INGRESSO/           # /events/:eventId/ticket-types
 ├── PEDIDOS/                     # /orders e /users/me/orders

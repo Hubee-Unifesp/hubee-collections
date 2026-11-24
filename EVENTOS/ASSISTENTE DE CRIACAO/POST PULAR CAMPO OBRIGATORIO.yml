@@ -1,0 +1,98 @@
+info:
+  name: POST PULAR CAMPO OBRIGATORIO
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/events/ai-assistant/turn"
+  body:
+    type: json
+    data: |-
+      {
+        "draft": {
+          "name": "Calourada da Engenharia",
+          "description": null,
+          "category": null,
+          "ageRating": null,
+          "edition": null,
+          "startDate": null,
+          "startTime": null,
+          "endDate": null,
+          "endTime": null,
+          "salesStartDate": null,
+          "salesStartTime": null,
+          "venue": null,
+          "ticketTypes": [],
+          "skipped": []
+        },
+        "field": "start",
+        "skip": true
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const FIELDS = ["name", "start", "end", "venue", "ticketTypes", "salesStart", "category", "ageRating", "description"];
+        const body = res.getBody();
+
+        test("devolve rascunho, reply, question, missingRequired e done", function () {
+          expect(body).to.have.all.keys("draft", "reply", "question", "missingRequired", "done");
+          expect(body.draft).to.include.all.keys("startDate", "startTime", "endDate", "endTime", "venue", "ticketTypes", "skipped");
+        });
+
+        test("done só é true sem pergunta e sem obrigatório faltando", function () {
+          expect(body.done).to.equal(body.question === null);
+          if (body.done) expect(body.missingRequired).to.be.empty;
+        });
+
+        test("a pergunta é de um campo conhecido", function () {
+          if (body.question !== null) {
+            expect(FIELDS).to.include(body.question.field);
+            expect(body.question.text).to.be.a("string").that.is.not.empty;
+            expect(body.question.skippable).to.be.a("boolean");
+          }
+        });
+
+        test("responde 200", function () {
+          expect(res.getStatus(), body && body.message).to.equal(200);
+        });
+
+        test("não pula campo obrigatório e avisa", function () {
+          expect(body.draft.skipped).to.not.include("start");
+          expect(body.question.field).to.equal("start");
+          expect(body.question.skippable).to.equal(false);
+          expect(body.question.text).to.match(/^Esse dado é obrigatório/);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /events/ai-assistant/turn
+
+  Campos obrigatórios (nome, início, término e local) não podem ser pulados: a pergunta volta com o aviso de obrigatório.
+
+  **Corpo**
+  - `draft` — rascunho devolvido na rodada anterior (ausente na primeira mensagem)
+  - `field` — campo da pergunta respondida: `name` | `start` | `end` | `venue` | `ticketTypes` | `salesStart` | `category` | `ageRating` | `description`
+  - `answer` — texto livre, até 2000 caracteres (obrigatório quando `skip` não é `true`)
+  - `skip` — `true` pula a pergunta de um campo opcional, sem chamar a IA
+
+  **Resposta `200`**
+  - `draft` — rascunho atualizado, com dia e horário separados (`startDate` `AAAA-MM-DD` + `startTime` `HH:mm`) e `skipped`
+  - `reply` — confirmação curta da IA (`null` quando não houve chamada)
+  - `question` — próxima pergunta `{ field, text, skippable }` ou `null`
+  - `missingRequired` — obrigatórios ainda incompletos (nome, início, término, local)
+  - `done` — `true` só quando não há mais pergunta
+
+  **Erros:** `400` corpo inválido · `401` sem token · `403` sem organização · `429` limite de IA (`Retry-After`) · `503` IA indisponível ou sem `ANTHROPIC_API_KEY`.
+
+  Em `production` a requisição não altera dados, mas as que chamam a IA consomem
+  tokens pagos e a cota do organizador.
