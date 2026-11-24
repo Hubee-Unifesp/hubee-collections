@@ -13,7 +13,7 @@ docs:
     Eventos em `/events`. Listagem e detalhe são públicos (só `published` para quem
     não é ADMIN nem membro da organização); escrita exige permissão na organização
     `{{organizerId}}` (`{{tokenOrganizador}}`). O POST CRIAR EVENTO salva o id em
-    `{{eventId}}`. O POST GERAR RASCUNHO COM IA devolve um rascunho gerado por IA a
-    partir de uma descrição em texto, sem salvar nada. Lotes ficam em LOTES DE
-    INGRESSO; rode o DELETE CANCELAR EVENTO só no fim do fluxo.
+    `{{eventId}}`. A subpasta ASSISTENTE DE CRIACAO testa a conversa com IA que monta
+    o rascunho do evento, sem salvar nada. Lotes ficam em LOTES DE INGRESSO; rode o
+    DELETE CANCELAR EVENTO só no fim do fluxo.
   type: text/markdown

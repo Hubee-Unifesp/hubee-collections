@@ -1,0 +1,59 @@
+info:
+  name: POST ASSISTENTE SEM PERMISSAO
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseUrl}}/events/ai-assistant/turn"
+  body:
+    type: json
+    data: |-
+      {
+        "answer": "Show de rock no sábado às 20h."
+      }
+  auth:
+    type: bearer
+    token: "{{tokenComprador}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("responde 403 Forbidden", function () {
+          expect(res.getStatus()).to.equal(403);
+        });
+
+        test("mensagem explica que a rota é de organizadores", function () {
+          expect(res.getBody().message).to.equal("Acesso restrito a organizadores de eventos");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  # POST /events/ai-assistant/turn
+
+  Comprador sem organização recebe `403` antes de qualquer chamada à IA, sem gastar a cota.
+
+  **Corpo**
+  - `draft` — rascunho devolvido na rodada anterior (ausente na primeira mensagem)
+  - `field` — campo da pergunta respondida: `name` | `start` | `end` | `venue` | `ticketTypes` | `salesStart` | `category` | `ageRating` | `description`
+  - `answer` — texto livre, até 2000 caracteres (obrigatório quando `skip` não é `true`)
+  - `skip` — `true` pula a pergunta de um campo opcional, sem chamar a IA
+
+  **Resposta `200`**
+  - `draft` — rascunho atualizado, com dia e horário separados (`startDate` `AAAA-MM-DD` + `startTime` `HH:mm`) e `skipped`
+  - `reply` — confirmação curta da IA (`null` quando não houve chamada)
+  - `question` — próxima pergunta `{ field, text, skippable }` ou `null`
+  - `missingRequired` — obrigatórios ainda incompletos (nome, início, término, local)
+  - `done` — `true` só quando não há mais pergunta
+
+  **Erros:** `400` corpo inválido · `401` sem token · `403` sem organização · `429` limite de IA (`Retry-After`) · `503` IA indisponível ou sem `ANTHROPIC_API_KEY`.
+
+  Em `production` a requisição não altera dados, mas as que chamam a IA consomem
+  tokens pagos e a cota do organizador.

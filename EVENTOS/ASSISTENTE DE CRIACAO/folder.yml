@@ -1,0 +1,13 @@
+info:
+  name: ASSISTENTE DE CRIACAO
+  type: folder
+  seq: 10
+
+docs:
+  content: |-
+    Assistente de criação de evento com IA (`POST /events/ai-assistant/turn`), em
+    formato de conversa: cada requisição é uma rodada, com o rascunho anterior no
+    corpo. Nada é salvo; o evento só é criado pelo POST CRIAR EVENTO. Cada
+    requisição traz um rascunho fixo, então dá para rodar em qualquer ordem. As que
+    chamam a IA precisam de `ANTHROPIC_API_KEY` na API e respondem `503` sem ela.
+  type: text/markdown
